@@ -1,7 +1,9 @@
-const { Router }   = require('express');
-const body_parser  = require('body-parser');
-const users_router = require('./users');
-const router       = Router();
+const { Router }        = require('express');
+const body_parser       = require('body-parser');
+const users_router      = require('./users');
+const files_router      = require('./files');
+const projects_router   = require('./projects')
+const router            = Router();
 
 // Middleware
 
@@ -18,5 +20,7 @@ router.get('/', function(request, response) {
 });
 
 router.use('/users', users_router);
+router.use('/files', files_router);
+router.use('/projects', projects_router);
 
 module.exports = router;
