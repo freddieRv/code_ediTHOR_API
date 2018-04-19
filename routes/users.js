@@ -1,6 +1,5 @@
-const { Router }  = require('express');
-const body_parser = require('body-parser');
-const router      = Router();
+const { Router } = require('express');
+const router     = Router();
 
 router.get('/', (request, response) => {
     response.send('Users index');
