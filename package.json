@@ -1,0 +1,22 @@
+{
+  "name": "code_edithor_api",
+  "version": "1.0.0",
+  "description": "API for the code EdiTHOR App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/freddieRv/code_ediTHOR_API.git"
+  },
+  "author": "Freddie Rv <freddie.rav@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/freddieRv/code_ediTHOR_API/issues"
+  },
+  "homepage": "https://github.com/freddieRv/code_ediTHOR_API#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
