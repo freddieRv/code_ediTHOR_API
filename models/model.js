@@ -9,6 +9,26 @@ class Model
         console.log(new_data);
     }
 
+    hasOne($model, $key=this.primary_key, $foreign_key='id')
+    {
+
+    }
+
+    hasMany($model, $key=this.primary_key, $foreign_key='id')
+    {
+
+    }
+
+    belongsTo($model, $key=this.primary_key, $foreign_key='id')
+    {
+
+    }
+
+    belongsToMany($model, $intermediate_table, $key=this.primary_key, $foreign_key='id')
+    {
+        
+    }
+
     static table()
     {
         return null;
@@ -31,7 +51,7 @@ class Model
 
     static all()
     {
-        // Get all elements
+        return this.query().get();
     }
 
     static find(ids)
@@ -49,13 +69,22 @@ class Model
 
     static destroy(ids)
     {
-        // Delete one or more elements
+        var res;
+
+        if (ids.constructor === Array) {
+            res = this.query().whereIn(this.primary_key(), ids).destroy();
+        } else {
+            res = this.query().whereIn(this.primary_key(), [ids]).destroy();
+        }
+
+        return res;
     }
 
     static query()
     {
         return new Query(this.table());
     }
+
 }
 
 module.exports = Model;

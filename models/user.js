@@ -20,6 +20,12 @@ class User extends Model
             'password',
         ];
     }
+
+    // TODO: relationships
+    // projects()
+    // {
+    //
+    // }
 }
 
 module.exports = User;

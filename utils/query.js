@@ -1,7 +1,7 @@
+// TODO: DB connection should be started here (extra class needed?)
+
 class Query
 {
-
-    // DB connection should be started here (extra class needed?)
 
     constructor(table)
     {
@@ -16,17 +16,37 @@ class Query
         this.where_statement = 'AND';
     }
 
-    where(field, operator=null, value=null)
+    sub_query()
     {
-        this.query_string   += ` ${this.where_statement} ${field} ${operator} ${value}`;
+        this.where_statement = '';
+    }
+
+    where(field_or_callback, operator=null, value=null)
+    {
+        if (operator && value) {
+            this.query_string += ` ${this.where_statement} ${field_or_callback} ${operator} ${value}`;
+        } else {
+            this.query_string += ` ${this.where_statement} (`;
+            this.sub_query();
+            field_or_callback(this);
+            this.query_string += ` )`;
+        }
+
         this.used_where_statement();
 
         return this;
     }
 
-    orWhere(field, operator=null, value=null)
+    orWhere(field_or_callback, operator=null, value=null)
     {
-        this.query_string += ` OR ${field} ${operator} ${value}`;
+        if (operator && value) {
+            this.query_string += ` OR ${field_or_callback} ${operator} ${value}`;
+        } else {
+            this.query_string += ` ${this.where_statement} (`;
+            this.sub_query();
+            field_or_callback(this);
+            this.query_string += ` )`;
+        }
         return this;
     }
 
@@ -62,6 +82,20 @@ class Query
         return this;
     }
 
+    order_by(field, direction='ASC')
+    {
+        this.query_string += ` ORDER BY ${field} ${direction}`;
+
+        return this;
+    }
+
+    limit(limit=30)
+    {
+        this.query_string += ` LIMIT ${limit}`;
+
+        return this;
+    }
+
     get()
     {
         return this.query_string;
@@ -90,3 +124,27 @@ class Query
 }
 
 module.exports = Query;
+
+// u = User.create({...})
+// u = User.all()
+// u = User.find()
+// u = User.where()...get()
+// u.update({...})
+// u.delete()
+//
+// where()
+// whereNot()
+// orWhere()
+// whereNull()
+// whereNotNull()
+// ...
+//
+// find()
+// all()
+//
+// get()
+// count()
+// delete()
+// update({...})
+// order_by({...})
+// limit({...})
