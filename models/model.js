@@ -1,19 +1,32 @@
+const Query = require('../utils/query');
+
 class Model
 {
-
-    // table()
-    // {
-    //     return '';   -------------- IDEA: One way
-    // }
-
-    constructor()
-    {
-        // instantiate object with data from db
-    }
+    constructor() { }
 
     update(new_data)
     {
-        // Iterate over new_data array and construct update query
+        console.log(new_data);
+    }
+
+    static table()
+    {
+        return null;
+    }
+
+    static fillable()
+    {
+        return null;
+    }
+
+    static primary_key()
+    {
+        return 'id';
+    }
+
+    static create(data)
+    {
+        console.log(data);
     }
 
     static all()
@@ -23,15 +36,26 @@ class Model
 
     static find(ids)
     {
-        // Find one or more elements
+        var res;
+
+        if (ids.constructor === Array) {
+            res = this.query().whereIn(this.primary_key(), ids).get();
+        } else {
+            res = this.query().whereIn(this.primary_key(), [ids]).get();
+        }
+
+        return res;
     }
 
     static destroy(ids)
     {
         // Delete one or more elements
     }
-}
 
-// Model.table = ''; ----------- IDEA: Another way
+    static query()
+    {
+        return new Query(this.table());
+    }
+}
 
 module.exports = Model;
