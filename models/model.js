@@ -9,7 +9,7 @@ class Model
 
     update(new_data)
     {
-        new_data.keys.forEach(function(key) {
+        Object.keys(new_data).forEach(function(key) {
             this.data[key] = new_data[key];
         });
 
@@ -30,7 +30,8 @@ class Model
 
     save()
     {
-        return this.query().createOrUpdate(this);
+        var query = new Query(this.constructor.table());
+        return query.createOrUpdate(this);
     }
 
     static table()
@@ -46,11 +47,6 @@ class Model
     static primary_key()
     {
         return 'id';
-    }
-
-    static create(data)
-    {
-        console.log(data);
     }
 
     static all()

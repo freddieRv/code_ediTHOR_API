@@ -5,13 +5,9 @@ class Query
 
     constructor(table)
     {
-        // The actual query string
-        this.query_string = '';
-
-        this.table = table;
-
-        this.action = `SELECT * FROM ${table}`
-
+        this.table           = table;
+        this.action          = `SELECT * FROM ${table}`
+        this.query_string    = '';
         this.where_statement = 'WHERE';
     }
 
@@ -28,6 +24,11 @@ class Query
     sql()
     {
         return this.action + this.query_string;
+    }
+
+    exec()
+    {
+        return this.sql();
     }
 
     where(field_or_callback, operator=null, value=null)
@@ -118,7 +119,7 @@ class Query
     count()
     {
         this.action = `SELECT COUNT(*) FROM ${this.table}`;
-        
+
 
         return this.sql();
     }
@@ -131,16 +132,27 @@ class Query
         return this.sql();
     }
 
-    update(new_data)
+    createOrUpdate(entity)
     {
-        this.action = `UPDATE ${this.table} SET`;
+        var db_entity =  null; // TODO: get row from db
 
-        // TODO: shit
+        if (db_entity) {
+            this.action = `UPDATE ${this.table} SET`;
+
+            Object.keys(entity.data).forEach(function(key) {
+                this.action += `${key} = ${entity.data[key]}, `;
+            });
+
+            this.action = this.action.substring(0, this.action.length - 2);
+        } else {
+            this.action = `INSERT INTO ${ this.table } ( ${ Object.keys(entity.data).join(', ') } )`
+                        + ` VALUES ( ${ Object.values(entity.data).join(', ') } )`
+        }
+
 
         return this.sql();
     }
 
-    // IDEA: may related_entity be the class
     one_relationship(entity, related_entity, foreign_key, key)
     {
         this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + foreign_key} = ${entity.data[key]}`;
