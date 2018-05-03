@@ -31,7 +31,7 @@ class Query
         var executor = new Executor();
 
         executor.exec(this.sql(), function(err, res, fields) {
-            
+            // what to do here?
         });
     }
 
