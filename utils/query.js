@@ -1,4 +1,4 @@
-// TODO: DB connection should be started here (extra class needed?)
+const Executor = require('../utils/executor');
 
 class Query
 {
@@ -28,7 +28,11 @@ class Query
 
     exec()
     {
-        return this.sql();
+        var executor = new Executor();
+
+        executor.exec(this.sql(), function(err, res, fields) {
+            
+        });
     }
 
     where(field_or_callback, operator=null, value=null)
@@ -140,13 +144,19 @@ class Query
             this.action = `UPDATE ${this.table} SET`;
 
             Object.keys(entity.data).forEach(function(key) {
-                this.action += `${key} = ${entity.data[key]}, `;
+                this.action += `${key} = ${ '\'' +  entity.data[key] + '\'' }, `;
             });
 
             this.action = this.action.substring(0, this.action.length - 2);
         } else {
+            var values = [];
+
+            Object.values(entity.data).forEach(function(value) {
+                values.push('\'' + value + '\'');
+            });
+
             this.action = `INSERT INTO ${ this.table } ( ${ Object.keys(entity.data).join(', ') } )`
-                        + ` VALUES ( ${ Object.values(entity.data).join(', ') } )`
+                        + ` VALUES ( ${ values.join(', ') } )`
         }
 
 
