@@ -1,10 +1,11 @@
-const Model = require('./model');
+const Model   = require('./model');
+const Project = require('./project');
 
 class User extends Model
 {
-    constructor()
+    constructor(data)
     {
-        super();
+        super(data);
     }
 
     static table()
@@ -21,11 +22,10 @@ class User extends Model
         ];
     }
 
-    // TODO: relationships
-    // projects()
-    // {
-    //
-    // }
+    projects()
+    {
+        return this.belongsToMany(Project, 'project_user', 'user_id');
+    }
 }
 
 module.exports = User;

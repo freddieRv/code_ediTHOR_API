@@ -6,7 +6,11 @@ class Query
     constructor(table)
     {
         // The actual query string
-        this.query_string = `SELECT * FROM ${table}`;
+        this.query_string = '';
+
+        this.table = table;
+
+        this.action = `SELECT * FROM ${table}`
 
         this.where_statement = 'WHERE';
     }
@@ -19,6 +23,11 @@ class Query
     sub_query()
     {
         this.where_statement = '';
+    }
+
+    sql()
+    {
+        return this.action + this.query_string;
     }
 
     where(field_or_callback, operator=null, value=null)
@@ -98,7 +107,7 @@ class Query
 
     get()
     {
-        return this.query_string;
+        return this.sql();
     }
 
     first()
@@ -108,43 +117,45 @@ class Query
 
     count()
     {
+        this.action = `SELECT COUNT(*) FROM ${this.table}`;
+        
 
+        return this.sql();
     }
 
     destroy()
     {
+        this.action = `DELETE FROM ${this.table}`;
 
+
+        return this.sql();
     }
 
     update(new_data)
     {
+        this.action = `UPDATE ${this.table} SET`;
 
+        // TODO: shit
+
+        return this.sql();
     }
 
+    // IDEA: may related_entity be the class
+    one_relationship(entity, related_entity, foreign_key, key)
+    {
+        this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + foreign_key} = ${entity.data[key]}`;
+        this.used_where_statement();
+
+        return this;
+    }
+
+    many_relationship(entity, related_entity, foreign_key, key)
+    {
+        this.query_string += ` ${this.where_statement} ${this.table + '.' + foreign_key} = ${entity.data[key]}`;
+        this.used_where_statement();
+
+        return this;
+    }
 }
 
 module.exports = Query;
-
-// u = User.create({...})
-// u = User.all()
-// u = User.find()
-// u = User.where()...get()
-// u.update({...})
-// u.delete()
-//
-// where()
-// whereNot()
-// orWhere()
-// whereNull()
-// whereNotNull()
-// ...
-//
-// find()
-// all()
-//
-// get()
-// count()
-// delete()
-// update({...})
-// order_by({...})
-// limit({...})

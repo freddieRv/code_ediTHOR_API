@@ -2,31 +2,35 @@ const Query = require('../utils/query');
 
 class Model
 {
-    constructor() { }
+    constructor(data={})
+    {
+        this.data = data;
+    }
 
     update(new_data)
     {
-        console.log(new_data);
+        new_data.keys.forEach(function(key) {
+            this.data[key] = new_data[key];
+        });
+
+        return this.query().createOrUpdate(this);
     }
 
-    hasOne($model, $key=this.primary_key, $foreign_key='id')
+    hasOneOrMany(model, foreign_key, key=this.constructor.primary_key())
     {
-
+        var query = new Query(model.table());
+        return query.one_relationship(this, model, foreign_key, key);
     }
 
-    hasMany($model, $key=this.primary_key, $foreign_key='id')
+    belongsToMany(model, intermediate_table, foreign_key, key=this.constructor.primary_key())
     {
-
+        var query = new Query(intermediate_table);
+        return query.many_relationship(this, model, foreign_key, key);
     }
 
-    belongsTo($model, $key=this.primary_key, $foreign_key='id')
+    save()
     {
-
-    }
-
-    belongsToMany($model, $intermediate_table, $key=this.primary_key, $foreign_key='id')
-    {
-        
+        return this.query().createOrUpdate(this);
     }
 
     static table()
@@ -57,12 +61,12 @@ class Model
     static find(ids)
     {
         var res;
+        var elements = ids.constructor === Array ? ids : [ids];
 
-        if (ids.constructor === Array) {
-            res = this.query().whereIn(this.primary_key(), ids).get();
-        } else {
-            res = this.query().whereIn(this.primary_key(), [ids]).get();
-        }
+        res = this.query().whereIn(this.primary_key(), elements).get();
+
+        // TODO: return new this.constructor(res)
+        // or something like that
 
         return res;
     }
@@ -70,12 +74,9 @@ class Model
     static destroy(ids)
     {
         var res;
+        var elements = ids.constructor === Array ? ids : [ids];
 
-        if (ids.constructor === Array) {
-            res = this.query().whereIn(this.primary_key(), ids).destroy();
-        } else {
-            res = this.query().whereIn(this.primary_key(), [ids]).destroy();
-        }
+        res = this.query().whereIn(this.primary_key(), elements).destroy();
 
         return res;
     }
