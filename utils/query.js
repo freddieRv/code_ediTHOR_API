@@ -30,7 +30,7 @@ class Query
     {
         var executor = new Executor();
 
-        return await executor.exec(this.sql());
+        return executor.exec(this.sql());
     }
 
     where(field_or_callback, operator=null, value=null)
