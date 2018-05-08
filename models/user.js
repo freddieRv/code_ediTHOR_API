@@ -22,6 +22,11 @@ class User extends Model
         ];
     }
 
+    static instance(data)
+    {
+        return new User(data);
+    }
+
     projects()
     {
         return this.belongsToMany(Project, 'project_user', 'user_id');

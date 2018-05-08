@@ -4,12 +4,24 @@ class UsersController
 {
     static index(request, response)
     {
-        response.send("Yay!")
+        User.all()
+        .then(function(res) {
+            response.send(res);
+        })
+        .catch(function(err) {
+            response.send(err);
+        });
     }
 
     static show(request, response)
     {
-        response.send(`Show user with id ${request.params.id}`);
+        User.find(request.params.id)
+        .then(function(res) {
+            response.send(res);
+        })
+        .catch(function(err) {
+            response.send(err);
+        });
     }
 
     static store(request, response)

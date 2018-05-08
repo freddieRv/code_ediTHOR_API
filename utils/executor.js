@@ -28,7 +28,7 @@ class Executor
         var db = this.db_connection;
 
         return new Promise(function(resolve, reject) {
-            db.query(query, function(res, err, fields) {
+            db.query(query, function(err, res, fields) {
                 if (err) {
                     reject(err);
                 } else {

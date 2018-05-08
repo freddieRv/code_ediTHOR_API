@@ -29,7 +29,6 @@ class Query
     exec()
     {
         var executor = new Executor();
-
         return executor.exec(this.sql());
     }
 
@@ -108,17 +107,7 @@ class Query
         return this;
     }
 
-    get()
-    {
-        // TODO: return objects (parse response)
-
-        return this.exec();
-    }
-
-    first()
-    {
-
-    }
+    // IDEA: no need for these methods here, call exec directly from model
 
     count()
     {

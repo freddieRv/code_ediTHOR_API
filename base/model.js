@@ -39,6 +39,11 @@ class Model
         return null;
     }
 
+    static instance(data)
+    {
+        return null;
+    }
+
     static fillable()
     {
         return null;
@@ -51,25 +56,51 @@ class Model
 
     static all()
     {
-        this.query().get().then(function(res) {
-            console.log(res);
-        })
-        .catch(function(err) {
-            console.log(err);
+        var model = this;
+
+        return new Promise(function(resolve, reject) {
+            model.query().exec()
+            .then(function(res) {
+                var parsed_res = [];
+
+                res.forEach(function(element) {
+                    parsed_res.push(model.instance(element));
+                });
+
+                resolve(parsed_res);
+            })
+            .catch(function(err) {
+
+                // TODO: parse error
+
+                reject(err);
+            });
         });
     }
 
     static find(ids)
     {
-        var res;
         var elements = ids.constructor === Array ? ids : [ids];
+        var model    = this;
 
-        res = this.query().whereIn(this.primary_key(), elements).get();
+        return new Promise(function(resolve, reject) {
+            model.query().whereIn(model.primary_key(), elements).exec()
+            .then(function(res) {
+                var parsed_res = [];
 
-        // TODO: return new this.constructor(res)
-        // or something like that
+                res.forEach(function(element) {
+                    parsed_res.push(model.instance(element));
+                });
 
-        return res;
+                resolve(parsed_res);
+            })
+            .catch(function(err) {
+
+                // TODO: parse error
+                
+                reject(err);
+            });
+        });
     }
 
     static destroy(ids)
