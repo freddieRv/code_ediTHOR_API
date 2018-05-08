@@ -9,24 +9,33 @@ class Executor
 
     init_db_connection()
     {
-        this.connection = DB.createConnection({
-            host:     env.db.host,
-            user:     env.db.user,
-            password: env.db.password,
-            database: env.db.name,
+        this.db_connection = DB.createConnection({
+            host:     ENV.db.host,
+            user:     ENV.db.user,
+            password: ENV.db.password,
+            database: ENV.db.name,
         });
 
-        db.connect(function(err) {
+        this.db_connection.connect(function(err) {
             if (err) {
                 console.error('DB CONNECTION ERROR: ' + err.stack);
             }
         });
     }
 
-    exec(query, callback)
+    exec(query)
     {
-        db.query(query, callback);
-        // this.connection.end();
+        var db = this.db_connection;
+
+        return new Promise(function(resolve, reject) {
+            db.query(query, function(res, err, fields) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            });
+        });
     }
 }
 

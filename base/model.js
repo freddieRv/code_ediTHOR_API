@@ -51,7 +51,12 @@ class Model
 
     static all()
     {
-        return this.query().get();
+        this.query().get().then(function(res) {
+            console.log(res);
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
     }
 
     static find(ids)

@@ -30,9 +30,7 @@ class Query
     {
         var executor = new Executor();
 
-        executor.exec(this.sql(), function(err, res, fields) {
-            // what to do here?
-        });
+        return await executor.exec(this.sql());
     }
 
     where(field_or_callback, operator=null, value=null)
@@ -112,7 +110,9 @@ class Query
 
     get()
     {
-        return this.sql();
+        // TODO: return objects (parse response)
+
+        return this.exec();
     }
 
     first()
@@ -158,7 +158,6 @@ class Query
             this.action = `INSERT INTO ${ this.table } ( ${ Object.keys(entity.data).join(', ') } )`
                         + ` VALUES ( ${ values.join(', ') } )`
         }
-
 
         return this.sql();
     }
