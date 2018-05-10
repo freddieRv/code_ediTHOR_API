@@ -9,8 +9,10 @@ class Model
 
     update(new_data)
     {
+        var user = this;
+
         Object.keys(new_data).forEach(function(key) {
-            this.data[key] = new_data[key];
+            user.data[key] = new_data[key];
         });
 
         return this.query().createOrUpdate(this);
@@ -97,20 +99,10 @@ class Model
             .catch(function(err) {
 
                 // TODO: parse error
-                
+
                 reject(err);
             });
         });
-    }
-
-    static destroy(ids)
-    {
-        var res;
-        var elements = ids.constructor === Array ? ids : [ids];
-
-        res = this.query().whereIn(this.primary_key(), elements).destroy();
-
-        return res;
     }
 
     static query()

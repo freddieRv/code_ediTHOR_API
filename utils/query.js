@@ -2,7 +2,6 @@ const Executor = require('../utils/executor');
 
 class Query
 {
-
     constructor(table)
     {
         this.table           = table;
@@ -107,36 +106,33 @@ class Query
         return this;
     }
 
-    // IDEA: no need for these methods here, call exec directly from model
-
     count()
     {
-        this.action = `SELECT COUNT(*) FROM ${this.table}`;
-
-
-        return this.sql();
+        this.action = `SELECT COUNT(*) AS count FROM ${this.table}`;
+        return this.exec();
     }
 
     destroy()
     {
         this.action = `DELETE FROM ${this.table}`;
-
-
-        return this.sql();
+        return this.exec();
     }
 
     createOrUpdate(entity)
     {
-        var db_entity =  null; // TODO: get row from db
+        var query = this;
 
-        if (db_entity) {
-            this.action = `UPDATE ${this.table} SET`;
+        if (entity.data.id) {
+            query.action = `UPDATE ${query.table} SET`;
 
             Object.keys(entity.data).forEach(function(key) {
-                this.action += `${key} = ${ '\'' +  entity.data[key] + '\'' }, `;
+                if (key != 'id') {
+                    query.action += ` ${key} = ${ '\'' +  entity.data[key] + '\'' }, `;
+                }
             });
 
-            this.action = this.action.substring(0, this.action.length - 2);
+            query.action = query.action.substring(0, query.action.length - 2);
+            query.action += ` WHERE id = ${entity.data.id} `;
         } else {
             var values = [];
 
@@ -148,7 +144,7 @@ class Query
                         + ` VALUES ( ${ values.join(', ') } )`
         }
 
-        return this.sql();
+        return this.exec();
     }
 
     one_relationship(entity, related_entity, foreign_key, key)
@@ -156,7 +152,7 @@ class Query
         this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + foreign_key} = ${entity.data[key]}`;
         this.used_where_statement();
 
-        return this;
+        return this.exec();
     }
 
     many_relationship(entity, related_entity, foreign_key, key)
@@ -164,7 +160,7 @@ class Query
         this.query_string += ` ${this.where_statement} ${this.table + '.' + foreign_key} = ${entity.data[key]}`;
         this.used_where_statement();
 
-        return this;
+        return this.exec();
     }
 }
 
