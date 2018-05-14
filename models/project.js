@@ -1,4 +1,5 @@
 const Model = require('../base/model');
+const File  = require('./file');
 
 class Project extends Model
 {
@@ -19,9 +20,19 @@ class Project extends Model
         ];
     }
 
+    static instance(data)
+    {
+        return new Project(data);
+    }
+
     users()
     {
         return this.belongsToMany(Project, 'project_user', 'project_id');
+    }
+
+    files()
+    {
+        return this.hasOneOrMany(File, 'project_id');
     }
 
 }
