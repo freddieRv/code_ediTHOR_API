@@ -26,7 +26,15 @@ class ProjectsController
 
     static store(request, response)
     {
-        response.send('Project store');
+        var project = new Project(request.body);
+
+        // TODO: create project root dir
+        // TODO: create relationship between project and user
+
+        response.send({
+            message: 'Project created',
+            project: project,
+        });
     }
 
     static update(request, response)
