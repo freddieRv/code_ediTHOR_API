@@ -3,9 +3,9 @@ const File  = require('./file');
 
 class Project extends Model
 {
-    constructor()
+    constructor(data)
     {
-        super();
+        super(data);
     }
 
     static table()
