@@ -30,9 +30,10 @@ class Project extends Model
         return this.belongsToMany(Project, 'project_user', 'project_id');
     }
 
-    files()
+    root_directory()
     {
-        return this.hasOneOrMany(File, 'project_id');
+        // FIXME: not so sure what to put here
+        return this.hasOneOrMany(Directory, 'project_id');
     }
 
 }
