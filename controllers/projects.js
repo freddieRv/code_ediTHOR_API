@@ -1,4 +1,5 @@
-const Project = require('../models/project');
+const Project   = require('../models/project');
+const Directory = require('../models/directory');
 
 class ProjectsController
 {
@@ -26,15 +27,35 @@ class ProjectsController
 
     static store(request, response)
     {
-        var project = new Project(request.body);
+        var project  = new Project(request.body);
+        var root_dir = new Directory();
 
-        // TODO: create project root dir
-        // TODO: create relationship between project and user
+        root_dir.save()
+        .then(function(res) {
+            project.data.root_dir_id = res.id;
 
-        response.send({
-            message: 'Project created',
-            project: project,
+            project.save()
+            .then(function(res) {
+
+                // TODO: create relationship between project and user
+
+                // TODO: how to save related models?
+
+                // TODO: how to get loged in user?
+
+                response.send({
+                    message: 'Project created',
+                    project: project,
+                });
+            })
+            .catch(function(err) {
+                response.send(err);
+            });
+        })
+        .catch(function(err) {
+            response.send(err);
         });
+
     }
 
     static update(request, response)
