@@ -61,7 +61,29 @@ class ProjectsController
 
     static update(request, response)
     {
-        response.send(`Edit project with id ${request.params.id}`);
+        Project.find(request.params.id)
+        .then(function(res) {
+            project = new Project(res);
+
+            Object.keys(request.body).forEach(function(key) {
+                project.data[key] = request.body[key];
+            });
+
+            project.save()
+            .then(function(res) {
+                response.send({
+                    message: "Project updated",
+                    project: proje
+                });
+            })
+            .catch(function(err) {
+                response.send(err);
+            });
+
+        })
+        .catch(function (err) {
+            response.send(err);
+        });
     }
 
     static destroy(request, response)
