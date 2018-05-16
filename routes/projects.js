@@ -1,6 +1,6 @@
 const { Router }  = require('express');
 const router      = Router();
-const controller  = require('../controllers/projects')
+const controller  = require('../controllers/projects');
 const Middleware  = require('../middleware/projects');
 
 router.get('/', controller.index);
