@@ -69,7 +69,7 @@ class ProjectsController
         response.send(`Delete project with id ${request.params.id}`);
     }
 
-    static files(request, response)
+    static file_tree(request, response)
     {
         Project.find(request.params.id)
         .then(function(res) {
