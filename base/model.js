@@ -36,6 +36,11 @@ class Model
         return query.createOrUpdate(this);
     }
 
+    save_related(related_entity, foreign_key, related_foreign_key=null, intermediate_table=null, pivots={})
+    {
+        return this.constructor.query().save_related(this, related_entity, foreign_key, related_foreign_key, intermediate_table, pivots);
+    }
+
     static table()
     {
         return null;

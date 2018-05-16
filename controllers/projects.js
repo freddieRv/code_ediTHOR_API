@@ -40,6 +40,7 @@ class ProjectsController
                 // TODO: create relationship between project and user
 
                 // TODO: how to save related models?
+                // u.save_related(p, 'user_id', 'project_id', 'project_user', {role_id: 5}).then(function(res){ console.log(res); })
 
                 // TODO: how to get loged in user?
 

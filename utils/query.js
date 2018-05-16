@@ -162,6 +162,30 @@ class Query
 
         return this.exec();
     }
+
+    save_related(entity, related_entity, foreign_key, related_foreign_key, intermediate_table, pivots={})
+    {
+        this.action = `INSERT INTO ${intermediate_table}`
+                    + ` ( ${foreign_key}, ${related_foreign_key}`;
+
+        console.log(Object.keys(pivots).length);
+
+        if (Object.keys(pivots).length != 0) {
+            this.action += `, ${Object.keys(pivots).join(', ')} )`;
+        } else {
+            this.action += ' )';
+        }
+
+        this.action += ` VALUES ( ${entity.data[entity.constructor.primary_key()]}, ${related_entity.data[related_entity.constructor.primary_key()]}`;
+
+        if (Object.keys(pivots).length != 0) {
+            this.action += `, ${Object.values(pivots).join(', ')} ) `;
+        } else {
+            this.action += ' )';
+        }
+
+        return this.exec();
+    }
 }
 
 module.exports = Query;
