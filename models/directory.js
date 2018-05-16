@@ -3,7 +3,7 @@ const File  = require('./file');
 
 class Directory extends Model
 {
-    constructor()
+    constructor(data)
     {
         super(data);
     }
@@ -24,10 +24,5 @@ class Directory extends Model
     static instance(data)
     {
         return new Directory(data);
-    }
-
-    directory()
-    {
-        return this.belongsToMany(Directory, 'directory_id');
     }
 }
