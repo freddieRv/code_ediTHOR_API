@@ -1,6 +1,6 @@
-const Project   = require('../models/project');
-const Directory = require('../models/directory');
-const User      = require('../models/user');
+const Project = require('../models/project');
+const File    = require('../models/file');
+const User    = require('../models/user');
 
 class ProjectsController
 {
@@ -19,20 +19,26 @@ class ProjectsController
     {
         Project.find(request.params.id)
         .then(function(res) {
-            // var project = res;
+            var project = new Project(res[0].data);
 
-            // Directory.find(project.data.root_dir_id)
-            // .then(function(directory) {
-            //     directory.tree();
-            // })
-            // .catch(function(err) {
-            //     response.send(err);
-            // });
+            File.query()
+            .where('project_id', '=', project.data.id)
+            .group_by(['id', 'father_id'])
+            .order_by('father_id')
+            .then(function(res) {
+                project.file_tree = {};
+
+                // TODO: make json file tree
+
+                response.send(project);
+            })
+            .catch(function(err) {
+                response.send(err)
+            });
 
             // TODO: Return project file tree
             // TODO: Return project users
 
-            response.send(res);
         })
         .catch(function(err) {
             response.send(err);
@@ -42,34 +48,37 @@ class ProjectsController
     static store(request, response)
     {
         var project  = new Project(request.body);
-        var root_dir = new Directory({name: '/'});
 
-        root_dir.save()
+        project.save()
         .then(function(res) {
-            project.data.root_dir_id = res.insertId;
+            var root_dir = new File({
+               name: '/',
+               type: 'd',
+               project_id: res.insertId,
+               created_by: 1, // TODO: where to get logged in user id?
+            });
 
-            project.save()
+            root_dir.save()
             .then(function(res) {
-
-                // TODO: how to get loged in user?
-                // TODO: create relationship between project and user
-
-                // u.save_related(p, 'user_id', 'project_id', 'project_user', {role_id: 5}).then(function(res) {
-                //     response.send({
-                //         message: 'Project created',
-                //         project: project,
-                //     });
-                // });
-
                 response.send({
                     message: 'Project created',
                     project: project,
                 });
-
             })
             .catch(function(err) {
                 response.send(err);
             });
+
+            // TODO: how to get loged in user?
+            // TODO: create relationship between project and user
+
+            // u.save_related(p, 'user_id', 'project_id', 'project_user', {role_id: 5}).then(function(res) {
+            //     response.send({
+            //         message: 'Project created',
+            //         project: project,
+            //     });
+            // });
+
         })
         .catch(function(err) {
             response.send(err);

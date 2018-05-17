@@ -1,5 +1,4 @@
-const Model     = require('../base/model');
-const Directory = require('./directory');
+const Model = require('../base/model');
 
 class Project extends Model
 {
@@ -31,12 +30,6 @@ class Project extends Model
     {
         return this.belongsToMany(Project, 'project_user', 'project_id');
     }
-
-    root_directory()
-    {
-        return this.hasOneOrMany(Directory, 'project_id');
-    }
-
 }
 
 module.exports = Project;

@@ -92,6 +92,13 @@ class Query
         return this;
     }
 
+    group_by(fields)
+    {
+        this.query_string += ` GROUP BY ${fields.join(', ')}`
+
+        return this;
+    }
+
     order_by(field, direction='ASC')
     {
         this.query_string += ` ORDER BY ${field} ${direction}`;

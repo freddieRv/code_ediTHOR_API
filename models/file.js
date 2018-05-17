@@ -16,8 +16,12 @@ class File extends Model
     {
         return [
             'name',
-            'path',
+            'type',
             'project_id',
+            'created_at',
+            'created_by',
+            'updated_at',
+            'father_id',
         ];
     }
 
