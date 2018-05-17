@@ -34,7 +34,7 @@ class Query
     where(field_or_callback, operator=null, value=null)
     {
         if (operator && value) {
-            this.query_string += ` ${this.where_statement} ${field_or_callback} ${operator} ${value}`;
+            this.query_string += ` ${this.where_statement} ${field_or_callback} ${operator} '${value}'`;
         } else {
             this.query_string += ` ${this.where_statement} (`;
             this.sub_query();
@@ -50,7 +50,7 @@ class Query
     orWhere(field_or_callback, operator=null, value=null)
     {
         if (operator && value) {
-            this.query_string += ` OR ${field_or_callback} ${operator} ${value}`;
+            this.query_string += ` OR ${field_or_callback} ${operator} '${value}'`;
         } else {
             this.query_string += ` ${this.where_statement} (`;
             this.sub_query();

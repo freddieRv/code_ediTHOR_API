@@ -33,6 +33,27 @@ module.exports = {
         }
     },
 
+    login_request(request, response, next)
+    {
+        errors = [];
+
+        if (!request.body['username']) {
+            errors.push('username field is required');
+        }
+
+        if (!request.body['password']) {
+            errors.push('password field is required');
+        }
+
+        if (errors.length) {
+            response.status(400).send({
+                erros: errors,
+            });
+        } else {
+            next();
+        }
+    },
+
     auth(request, response, next)
     {
         var token = request.headers['x-access-token'];

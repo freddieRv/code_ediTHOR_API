@@ -33,13 +33,44 @@ class AuthController
 
         })
         .catch(function(err) {
-            response.send(err);
+            response.status(500).send(err);
         });
     }
 
     static login(request, response)
     {
-        response.send("login");
+        User.query()
+        .where('username', '=', request.body.username)
+        .orWhere('email', '=', request.body.username)
+        .exec()
+        .then(function(res) {
+
+            var valid_password = bcrypt.compareSync(request.body.password, res[0].password);
+
+            if (valid_password && res) {
+                var token = jwt.sign(
+                    {
+                        id: res.id
+                    },
+                    env.app_key,
+                    {
+                        expiresIn: env.auth_token_expiration_time
+                    }
+                );
+
+                response.send({
+                    message: 'Login succesfull',
+                    token: token
+                });
+            } else {
+                response.status(400).send({
+                    message: 'This credentials don\'t match our records'
+                });
+            }
+        })
+        .catch(function(err) {
+            response.status(500).send(err);
+        });
     }
 
     static forgot_password_email(request, response)
