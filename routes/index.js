@@ -3,6 +3,7 @@ const body_parser     = require('body-parser');
 const users_router    = require('./users');
 const files_router    = require('./files');
 const projects_router = require('./projects');
+const auth_router     = require('./auth');
 const router          = Router();
 
 // Middleware
@@ -19,6 +20,7 @@ router.get('/', function(request, response) {
     response.send('Code EdiTHOR API v1.0');
 });
 
+router.use('/', auth_router);
 router.use('/users', users_router);
 router.use('/files', files_router);
 router.use('/projects', projects_router);

@@ -55,3 +55,9 @@ CREATE TABLE IF NOT EXISTS project_user (
     FOREIGN KEY (user_id)    REFERENCES users(id),
     FOREIGN KEY (role_id)    REFERENCES roles(id)
 );
+
+INSERT INTO roles (name, description) VALUES ('admin', 'Has permissions over all users and projects');
+INSERT INTO roles (name, description) VALUES ('user', 'Normal user, can create and administrate projects');
+INSERT INTO roles (name, description) VALUES ('project_admin', 'Has all permissions over projects. Can add and remove users as well as files and directories');
+INSERT INTO roles (name, description) VALUES ('project_tester', 'Has limited permissions over projects.');
+INSERT INTO roles (name, description) VALUES ('project_developer', 'Has limited permissions over projects.');
