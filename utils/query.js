@@ -168,8 +168,6 @@ class Query
         this.action = `INSERT INTO ${intermediate_table}`
                     + ` ( ${foreign_key}, ${related_foreign_key}`;
 
-        console.log(Object.keys(pivots).length);
-
         if (Object.keys(pivots).length != 0) {
             this.action += `, ${Object.keys(pivots).join(', ')} )`;
         } else {

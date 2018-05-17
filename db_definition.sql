@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS projects (
     name        VARCHAR(50) NOT NULL,
     root_dir_id INT(10)     NOT NULL,
     created_at  TIMESTAMP   NOT NULL,
+    description TEXT        NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (root_dir_id) REFERENCES directories(id)
 );

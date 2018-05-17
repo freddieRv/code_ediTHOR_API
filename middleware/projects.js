@@ -19,5 +19,22 @@ module.exports = {
             next();
         }
 
+    },
+
+    add_user(request, response, next)
+    {
+        errors = [];
+
+        if (!request.body['user_id']) {
+            errors.push('user_id field is required');
+        }
+
+        if (errors.length) {
+            response.status(400).send({
+                erros: errors,
+            });
+        } else {
+            next();
+        }
     }
 }

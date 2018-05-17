@@ -1,5 +1,6 @@
 const Project   = require('../models/project');
 const Directory = require('../models/directory');
+const User      = require('../models/user');
 
 class ProjectsController
 {
@@ -18,6 +19,17 @@ class ProjectsController
     {
         Project.find(request.params.id)
         .then(function(res) {
+            // var project = res;
+
+            // Directory.find(project.data.root_dir_id)
+            // .then(function(directory) {
+            //     directory.tree();
+            // })
+            // .catch(function(err) {
+            //     response.send(err);
+            // });
+
+            // TODO: Return project file tree too
             response.send(res);
         })
         .catch(function(err) {
@@ -28,26 +40,30 @@ class ProjectsController
     static store(request, response)
     {
         var project  = new Project(request.body);
-        var root_dir = new Directory();
+        var root_dir = new Directory({name: '/'});
 
         root_dir.save()
         .then(function(res) {
-            project.data.root_dir_id = res.id;
+            project.data.root_dir_id = res.insertId;
 
             project.save()
             .then(function(res) {
 
+                // TODO: how to get loged in user?
                 // TODO: create relationship between project and user
 
-                // TODO: how to save related models?
-                // u.save_related(p, 'user_id', 'project_id', 'project_user', {role_id: 5}).then(function(res){ console.log(res); })
-
-                // TODO: how to get loged in user?
+                // u.save_related(p, 'user_id', 'project_id', 'project_user', {role_id: 5}).then(function(res) {
+                //     response.send({
+                //         message: 'Project created',
+                //         project: project,
+                //     });
+                // });
 
                 response.send({
                     message: 'Project created',
                     project: project,
                 });
+
             })
             .catch(function(err) {
                 response.send(err);
@@ -63,7 +79,7 @@ class ProjectsController
     {
         Project.find(request.params.id)
         .then(function(res) {
-            project = new Project(res);
+            var project = new Project(res[0].data);
 
             Object.keys(request.body).forEach(function(key) {
                 project.data[key] = request.body[key];
@@ -73,7 +89,7 @@ class ProjectsController
             .then(function(res) {
                 response.send({
                     message: "Project updated",
-                    project: proje
+                    project: project
                 });
             })
             .catch(function(err) {
@@ -108,6 +124,29 @@ class ProjectsController
             } else {
                 response.send({});
             }
+        })
+        .catch(function(err) {
+            response.send(err);
+        });
+    }
+
+    static add_user(request, response)
+    {
+        Project.find(request.params.id)
+        .then(function(res) {
+            var project = new Project(res[0].data);
+            var user    = new User({id: request.body.user_id});
+
+            project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: 5})
+            .then(function(res) {
+                response.send({
+                    message: "User added to project",
+                });
+            })
+            .catch(function(err) {
+                response.send(err);
+            });
+
         })
         .catch(function(err) {
             response.send(err);

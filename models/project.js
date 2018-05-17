@@ -1,5 +1,5 @@
-const Model = require('../base/model');
-const File  = require('./file');
+const Model     = require('../base/model');
+const Directory = require('./directory');
 
 class Project extends Model
 {
