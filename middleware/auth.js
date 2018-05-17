@@ -66,7 +66,7 @@ module.exports = {
             if (err) {
                 response.status(500).send('Failed to authenticate token');
             } else {
-                request.authenticated_user_id = decoded.id
+                request.authenticated_user_id = decoded.id;
                 next();
             }
         });

@@ -6,12 +6,20 @@ class ProjectsController
 {
     static index(request, response)
     {
-        Project.all()
-        .then(function(res) {
-            response.send(res);
+        User.find(request.authenticated_user_id)
+        .then(function(users) {
+            var user = new User(users[0].data);
+
+            user.projects()
+            .then(function(projects) {
+                response.send(projects);
+            })
+            .catch(function(err) {
+                response.status(500).send(err);
+            });
         })
         .catch(function(err) {
-            response.send(err);
+            response.status(500).send(err);
         });
     }
 

@@ -45,12 +45,18 @@ class AuthController
         .exec()
         .then(function(res) {
 
+            if (!res) {
+                response.status(400).send({
+                    message: 'This credentials don\'t match our records'
+                });
+            }
+
             var valid_password = bcrypt.compareSync(request.body.password, res[0].password);
 
-            if (valid_password && res) {
+            if (valid_password) {
                 var token = jwt.sign(
                     {
-                        id: res.id
+                        id: res[0].id
                     },
                     env.app_key,
                     {
