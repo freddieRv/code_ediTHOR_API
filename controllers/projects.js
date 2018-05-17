@@ -29,7 +29,9 @@ class ProjectsController
             //     response.send(err);
             // });
 
-            // TODO: Return project file tree too
+            // TODO: Return project file tree
+            // TODO: Return project users
+
             response.send(res);
         })
         .catch(function(err) {
