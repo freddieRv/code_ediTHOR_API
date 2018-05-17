@@ -8,6 +8,6 @@ router.post('/', Middleware.create_request, controller.store);
 router.get('/:id', controller.show);
 router.put('/:id', controller.update);
 router.delete('/:id', controller.destroy);
-router.get('/:id/files', controller.files);
+router.get('/:id/files', controller.file_tree);
 
 module.exports = router;

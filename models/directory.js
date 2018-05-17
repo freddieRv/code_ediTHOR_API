@@ -8,16 +8,16 @@ class Directory extends Model
         super(data);
     }
 
-    static table(){
+    static table()
+    {
         return 'directories';
     }
 
     static fillable()
     {
-        // TODO: put here the attrib of directories
         return [
-            'some',
-            'data'
+            'name',
+            'father',
         ];
     }
 
@@ -25,4 +25,11 @@ class Directory extends Model
     {
         return new Directory(data);
     }
+
+    father ()
+    {
+        return this.hasOneOrMany(Directory, 'father');
+    }
 }
+
+module.exports = Directory;

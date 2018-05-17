@@ -17,6 +17,8 @@ class Project extends Model
     {
         return [
             'name',
+            'root_dir_id',
+            'created_at',
         ];
     }
 
@@ -32,7 +34,6 @@ class Project extends Model
 
     root_directory()
     {
-        // FIXME: not so sure what to put here
         return this.hasOneOrMany(Directory, 'project_id');
     }
 
