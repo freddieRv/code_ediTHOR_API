@@ -33,6 +33,7 @@ class ProjectsController
             .where('project_id', '=', project.data.id)
             .group_by(['id', 'father_id'])
             .order_by('father_id')
+            .exec()
             .then(function(res) {
                 project.file_tree = {};
 
@@ -43,9 +44,6 @@ class ProjectsController
             .catch(function(err) {
                 response.send(err)
             });
-
-            // TODO: Return project file tree
-            // TODO: Return project users
 
         })
         .catch(function(err) {
@@ -58,34 +56,44 @@ class ProjectsController
         var project  = new Project(request.body);
 
         project.save()
-        .then(function(res) {
+        .then(function(project_res) {
             var root_dir = new File({
                name: '/',
                type: 'd',
-               project_id: res.insertId,
-               created_by: 1, // TODO: where to get logged in user id?
+               project_id: project_res.insertId,
+               created_by: request.authenticated_user_id,
             });
 
+            project.data.id = project_res.insertId;
+
             root_dir.save()
-            .then(function(res) {
-                response.send({
-                    message: 'Project created',
-                    project: project,
+            .then(function(dir_res) {
+
+                User.find(request.authenticated_user_id)
+                .then(function(users) {
+                    var user = new User(users[0].data)
+
+                    user.save_related(project, 'user_id', 'project_id', 'project_user', {role_id: 3})
+                    .then(function(user_res) {
+
+                        response.send({
+                            message: 'Project created',
+                            project: project,
+                        });
+                    })
+                    .catch(function(err) {
+                        response.status(500).send(err);
+                    });
+
+                })
+                .catch(function(err) {
+                    response.status(500).send(err);
                 });
+
             })
             .catch(function(err) {
                 response.send(err);
             });
-
-            // TODO: how to get loged in user?
-            // TODO: create relationship between project and user
-
-            // u.save_related(p, 'user_id', 'project_id', 'project_user', {role_id: 5}).then(function(res) {
-            //     response.send({
-            //         message: 'Project created',
-            //         project: project,
-            //     });
-            // });
 
         })
         .catch(function(err) {
@@ -124,29 +132,6 @@ class ProjectsController
     static destroy(request, response)
     {
         response.send(`Delete project with id ${request.params.id}`);
-    }
-
-    static file_tree(request, response)
-    {
-        Project.find(request.params.id)
-        .then(function(res) {
-            if (res) {
-                p = new Project(res);
-
-                p.files()
-                .then(function(res) {
-                    response.send(res);
-                })
-                .catch(function(err) {
-                    respponse.send(err);
-                });
-            } else {
-                response.send({});
-            }
-        })
-        .catch(function(err) {
-            response.send(err);
-        });
     }
 
     static add_user(request, response)
