@@ -26,15 +26,18 @@ class ProjectsController
     static show(request, response)
     {
         Project.find(request.params.id)
-        .then(function(res) {
-            var project = new Project(res[0].data);
+        .then(function(project_res) {
+            var project = new Project(project_res[0].data);
 
             File.query()
             .where('project_id', '=', project.data.id)
             .group_by(['id', 'father_id'])
             .order_by('father_id')
             .exec()
-            .then(function(res) {
+            .then(function(file_res) {
+
+                console.log(project_res);
+
                 project.file_tree = {};
 
                 // TODO: make json file tree
