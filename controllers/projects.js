@@ -179,6 +179,28 @@ class ProjectsController
             response.send(err);
         });
     }
+
+    static add_file(request, response)
+    {
+        var file = new File({
+            name:       request.body.name,
+            type:       request.body.type,
+            project_id: request.params.id,
+            created_by: request.authenticated_user_id,
+            father_id:  request.body.father_id,
+        });
+
+        file.save()
+        .then(function(res) {
+            response.send({
+                message: 'File created',
+                file: file
+            });
+        })
+        .catch(function(err) {
+            response.status(500).send(err);
+        });
+    }
 }
 
 module.exports = ProjectsController;

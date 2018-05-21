@@ -58,8 +58,6 @@ module.exports = {
     {
         var token = request.headers['x-access-token'];
 
-        console.log(request.headers);
-
         if (!token) {
             response.status(401).send("No auth token provided");
             next('router');
