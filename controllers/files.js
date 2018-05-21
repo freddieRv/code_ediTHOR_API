@@ -6,6 +6,9 @@ class FilesController
     {
         File.find(request.params.id)
         .then(function(res) {
+
+            // TODO: send the actual file instead of the db entity
+            // response.download(res.location, res.name);
             response.send(res);
         })
         .catch(function(err) {

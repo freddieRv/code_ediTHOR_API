@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS files (
     created_at TIMESTAMP      NOT NULL,
     created_by INT(10)        NOT NULL,
     updated_at TIMESTAMP      NULL,
+    location   VARCHAR(100)   NULL,
     father_id  INT(10)        NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (father_id)  REFERENCES files(id),
