@@ -159,6 +159,26 @@ class ProjectsController
             response.send(err);
         });
     }
+
+    static files(request, response)
+    {
+        Project.find(request.params.id)
+        .then(function(project_res) {
+            var project = new Project(project_res[0].data);
+
+            project.file_tree()
+            .then(function(file_tree) {
+                response.send(file_tree);
+            })
+            .catch(function(file_tree_err) {
+                response.status(500).send(file_tree_err);
+            });
+
+        })
+        .catch(function(err) {
+            response.send(err);
+        });
+    }
 }
 
 module.exports = ProjectsController;

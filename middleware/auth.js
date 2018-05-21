@@ -58,18 +58,22 @@ module.exports = {
     {
         var token = request.headers['x-access-token'];
 
+        console.log(request.headers);
+
         if (!token) {
             response.status(401).send("No auth token provided");
+            next('router');
+        } else {
+            jwt.verify(token, env.app_key, function(err, decoded) {
+                if (err) {
+                    response.status(500).send('Failed to authenticate token');
+                } else {
+                    request.authenticated_user_id = decoded.id;
+                    next();
+                }
+            });
         }
 
-        jwt.verify(token, env.app_key, function(err, decoded) {
-            if (err) {
-                response.status(500).send('Failed to authenticate token');
-            } else {
-                request.authenticated_user_id = decoded.id;
-                next();
-            }
-        });
     }
 
 };
