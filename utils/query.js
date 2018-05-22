@@ -162,9 +162,11 @@ class Query
         return this.exec();
     }
 
-    many_relationship(entity, related_entity, foreign_key, key)
+    many_relationship(entity, related_entity, foreign_key, key, related_entity_foreign_key, intermediate_table)
     {
-        this.query_string += ` ${this.where_statement} ${this.table + '.' + foreign_key} = ${entity.data[key]}`;
+        this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + related_entity.primary_key()} IN`
+                           + ` ( SELECT ${related_entity_foreign_key} FROM ${intermediate_table} WHERE ${foreign_key} = ${entity.data[key]} )`;
+
         this.used_where_statement();
 
         return this.exec();

@@ -1,5 +1,6 @@
 const Model = require('../base/model');
 const File  = require('./file');
+const User  = require('./user'); // FIXME: this shit doesnt get properly loaded
 
 class Project extends Model
 {
@@ -29,7 +30,11 @@ class Project extends Model
 
     users()
     {
-        return this.belongsToMany(Project, 'project_user', 'project_id');
+        var u = new User({id:3});
+        console.log("SDSDSDSFSFDF");
+        console.log(u);
+
+        return this.belongsToMany(User, 'project_user', 'project_id', 'user_id');
     }
 
     find_node(node_id, tree)

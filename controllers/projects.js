@@ -29,23 +29,23 @@ class ProjectsController
         .then(function(project_res) {
             var project = new Project(project_res[0].data);
 
-            File.query()
-            .where('project_id', '=', project.data.id)
-            .group_by(['id', 'father_id'])
-            .order_by('father_id')
-            .exec()
-            .then(function(file_res) {
+            project.file_tree()
+            .then(function(file_tree) {
+                project.file_tree = file_tree;
 
-                console.log(project_res);
+                project.users()
+                .then(function(users_res) {
+                    project.users = users_res;
 
-                project.file_tree = {};
+                    response.send(project);
+                })
+                .catch(function(users_err) {
+                    response.status(500).send(users_err);
+                });
 
-                // TODO: make json file tree
-
-                response.send(project);
             })
-            .catch(function(err) {
-                response.send(err)
+            .catch(function(file_tree_err) {
+                response.status(500).send(file_tree_err);
             });
 
         })
