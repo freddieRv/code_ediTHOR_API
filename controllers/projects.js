@@ -10,7 +10,7 @@ class ProjectsController
         .then(function(users) {
             var user = new User(users[0].data);
 
-            user.projects()
+            user.projects(Project)
             .then(function(projects) {
                 response.send(projects);
             })
@@ -25,9 +25,11 @@ class ProjectsController
 
     static show(request, response)
     {
+        var project = null;
+
         Project.find(request.params.id)
         .then(function(project_res) {
-            var project = new Project(project_res[0].data);
+            project = new Project(project_res[0].data);
 
             project.file_tree()
             .then(function(file_tree) {
@@ -134,7 +136,19 @@ class ProjectsController
 
     static destroy(request, response)
     {
-        response.send(`Delete project with id ${request.params.id}`);
+
+        Project.query()
+        .where('id', '=', request.params.id)
+        .destroy()
+        .then(function(res) {
+            response.send({
+                message: "Project deleted"
+            });
+        })
+        .catch(function(err) {
+            response.status(500).send(err);
+        });
+
     }
 
     static add_user(request, response)

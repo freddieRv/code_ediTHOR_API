@@ -1,6 +1,6 @@
 const Model = require('../base/model');
 const File  = require('./file');
-const User  = require('./user'); // FIXME: this shit doesnt get properly loaded
+const Query = require('../utils/query');
 
 class Project extends Model
 {
@@ -19,7 +19,7 @@ class Project extends Model
         return [
             'name',
             'root_dir_id',
-            'created_at',
+            'created_at'
         ];
     }
 
@@ -30,11 +30,18 @@ class Project extends Model
 
     users()
     {
-        var u = new User({id:3});
-        console.log("SDSDSDSFSFDF");
-        console.log(u);
+        var query = new Query();
+        var query_string = `
+            SELECT U.id, U.username, U.email, R.name AS role
+            FROM users AS U
+            INNER JOIN project_user AS PU
+                ON PU.user_id = U.id
+            INNER JOIN roles AS R
+                ON R.id = PU.role_id
+            WHERE PU.project_id = ${this.data.id}
+        `;
 
-        return this.belongsToMany(User, 'project_user', 'project_id', 'user_id');
+        return query.exec(query_string);
     }
 
     find_node(node_id, tree)

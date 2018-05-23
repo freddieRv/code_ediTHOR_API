@@ -1,5 +1,4 @@
-const Model   = require('../base/model');
-const Project = require('./project');
+const Model = require('../base/model');
 
 class User extends Model
 {
@@ -27,7 +26,7 @@ class User extends Model
         return new User(data);
     }
 
-    projects()
+    projects(Project)
     {
         return this.belongsToMany(Project, 'project_user', 'user_id', 'project_id');
     }

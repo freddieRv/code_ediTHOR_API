@@ -25,10 +25,12 @@ class Query
         return this.action + this.query_string;
     }
 
-    exec()
+    exec(query_string="")
     {
+        var query    = query_string ||this.sql();
         var executor = new Executor();
-        return executor.exec(this.sql());
+
+        return executor.exec(query);
     }
 
     where(field_or_callback, operator=null, value=null)
