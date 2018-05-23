@@ -6,8 +6,12 @@ const auth_middleware  = require('../middleware/auth');
 const files_middleware = require('../middleware/files');
 
 router.use(auth_middleware.auth);
+
 router.get('/', controller.index);
 router.post('/', middleware.create_request, controller.store);
+
+router.use(middleware.can_update);
+
 router.get('/:id', controller.show);
 router.put('/:id', controller.update);
 router.delete('/:id', controller.destroy);
