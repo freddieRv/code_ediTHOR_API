@@ -24,16 +24,22 @@ class Model
         return query.one_relationship(this, model, foreign_key, key);
     }
 
-    belongsToMany(model, intermediate_table, foreign_key, key=this.constructor.primary_key())
+    belongsToMany(model, intermediate_table, foreign_key, related_entity_foreign_key, key=this.constructor.primary_key())
     {
-        var query = new Query(intermediate_table);
-        return query.many_relationship(this, model, foreign_key, key);
+        var query = new Query(model.table());
+        return query.many_relationship(this, model, foreign_key, key, related_entity_foreign_key, intermediate_table);
     }
 
     save()
     {
         var query = new Query(this.constructor.table());
         return query.createOrUpdate(this);
+    }
+
+    save_related(related_entity, foreign_key, related_foreign_key=null, intermediate_table=null, pivots={})
+    {
+        var query = new Query(this.constructor.table());
+        return query.save_related(this, related_entity, foreign_key, related_foreign_key, intermediate_table, pivots);
     }
 
     static table()

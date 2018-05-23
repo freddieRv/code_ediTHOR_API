@@ -25,16 +25,18 @@ class Query
         return this.action + this.query_string;
     }
 
-    exec()
+    exec(query_string="")
     {
+        var query    = query_string ||this.sql();
         var executor = new Executor();
-        return executor.exec(this.sql());
+
+        return executor.exec(query);
     }
 
     where(field_or_callback, operator=null, value=null)
     {
         if (operator && value) {
-            this.query_string += ` ${this.where_statement} ${field_or_callback} ${operator} ${value}`;
+            this.query_string += ` ${this.where_statement} ${field_or_callback} ${operator} '${value}'`;
         } else {
             this.query_string += ` ${this.where_statement} (`;
             this.sub_query();
@@ -50,7 +52,7 @@ class Query
     orWhere(field_or_callback, operator=null, value=null)
     {
         if (operator && value) {
-            this.query_string += ` OR ${field_or_callback} ${operator} ${value}`;
+            this.query_string += ` OR ${field_or_callback} ${operator} '${value}'`;
         } else {
             this.query_string += ` ${this.where_statement} (`;
             this.sub_query();
@@ -88,6 +90,13 @@ class Query
     {
         this.query_string += ` ${this.where_statement} ${field} NOT IN ( ${values.join(', ')} )`;
         this.used_where_statement();
+
+        return this;
+    }
+
+    group_by(fields)
+    {
+        this.query_string += ` GROUP BY ${fields.join(', ')}`
 
         return this;
     }
@@ -155,10 +164,34 @@ class Query
         return this.exec();
     }
 
-    many_relationship(entity, related_entity, foreign_key, key)
+    many_relationship(entity, related_entity, foreign_key, key, related_entity_foreign_key, intermediate_table)
     {
-        this.query_string += ` ${this.where_statement} ${this.table + '.' + foreign_key} = ${entity.data[key]}`;
+        this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + related_entity.primary_key()} IN`
+                           + ` ( SELECT ${related_entity_foreign_key} FROM ${intermediate_table} WHERE ${foreign_key} = ${entity.data[key]} )`;
+
         this.used_where_statement();
+
+        return this.exec();
+    }
+
+    save_related(entity, related_entity, foreign_key, related_foreign_key, intermediate_table, pivots={})
+    {
+        this.action = `INSERT INTO ${intermediate_table}`
+                    + ` ( ${foreign_key}, ${related_foreign_key}`;
+
+        if (Object.keys(pivots).length != 0) {
+            this.action += `, ${Object.keys(pivots).join(', ')} )`;
+        } else {
+            this.action += ' )';
+        }
+
+        this.action += ` VALUES ( ${entity.data[entity.constructor.primary_key()]}, ${related_entity.data[related_entity.constructor.primary_key()]}`;
+
+        if (Object.keys(pivots).length != 0) {
+            this.action += `, ${Object.values(pivots).join(', ')} ) `;
+        } else {
+            this.action += ' )';
+        }
 
         return this.exec();
     }
