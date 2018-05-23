@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "de9e4690-ffb6-4f4c-83de-893b2ae920ce",
+		"_postman_id": "980129c1-8338-4a59-9091-b70efc331ccb",
 		"name": "code_edithor",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -29,13 +29,11 @@
 								{
 									"key": "description",
 									"value": "NNUTS",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "name",
 									"value": "DEEZ",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -122,13 +120,11 @@
 								{
 									"key": "name",
 									"value": "SOMENAME",
-									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "description",
 									"value": "what",
-									"description": "",
 									"type": "text"
 								}
 							]
@@ -155,7 +151,10 @@
 								"value": "{{auth_token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{URL}}/projects/11",
 							"host": [
@@ -173,7 +172,7 @@
 		},
 		{
 			"name": "auth",
-			"description": "",
+			"description": null,
 			"item": [
 				{
 					"name": "login",
@@ -266,7 +265,7 @@
 		},
 		{
 			"name": "files",
-			"description": "",
+			"description": null,
 			"item": [
 				{
 					"name": "store",
@@ -308,6 +307,108 @@
 								"projects",
 								"2",
 								"files"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"description": "",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{URL}}/users/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{URL}}/users/8",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{URL}}/users/8",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destroy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{URL}}/users/8",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users",
+								"8"
 							]
 						}
 					},
