@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS files (
     location   VARCHAR(100)   NULL,
     father_id  INT(10)        NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (father_id)  REFERENCES files(id),
-    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (father_id)  REFERENCES files(id)    ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS project_user (
     user_id    INT(10) NOT NULL,
     role_id    INT(10) NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (project_id) REFERENCES projects(id),
-    FOREIGN KEY (user_id)    REFERENCES users(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id)    REFERENCES users(id)    ON DELETE CASCADE,
     FOREIGN KEY (role_id)    REFERENCES roles(id)
 );
 
