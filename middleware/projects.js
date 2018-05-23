@@ -43,10 +43,15 @@ module.exports = {
 
     can_update(request, response, next)
     {
-        console.log(request);
-
         Project.find(request.params.id)
         .then(function(projects) {
+
+            if (projects == false) {
+                response.status(404).send('Project not found');
+                next('router');
+                return;
+            }
+
             var project = new Project(projects[0].data);
 
             project.users(User)
@@ -54,7 +59,7 @@ module.exports = {
                 var allowed = false;
 
                 users.forEach(function(user) {
-                    if (user.data.id == request.params.id) {
+                    if (user.id == request.authenticated_user_id) {
                         allowed = true;
                     }
                 });
@@ -81,6 +86,6 @@ module.exports = {
 
     can_delete()
     {
-        
+
     }
 }
