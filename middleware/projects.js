@@ -44,7 +44,7 @@ module.exports = {
     can_update(request, response, next)
     {
         console.log(request);
-        
+
         Project.find(request.params.id)
         .then(function(projects) {
             var project = new Project(projects[0].data);
@@ -77,5 +77,10 @@ module.exports = {
             response.status(500).send(projects_err);
             next('router');
         });
+    },
+
+    can_delete()
+    {
+        
     }
 }

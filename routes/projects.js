@@ -14,9 +14,12 @@ router.use(middleware.can_update);
 
 router.get('/:id', controller.show);
 router.put('/:id', controller.update);
-router.delete('/:id', controller.destroy);
 router.put('/:id/add_user', middleware.add_user, controller.add_user);
 router.get('/:id/files', controller.files);
 router.post('/:id/files', files_middleware.create_request, controller.add_file);
+
+router.use(middleware.can_delete);
+
+router.delete('/:id', controller.destroy);
 
 module.exports = router;
