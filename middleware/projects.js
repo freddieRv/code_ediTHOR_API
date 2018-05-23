@@ -52,19 +52,44 @@ module.exports = {
 
     add_user(request, response, next)
     {
-        errors = [];
+        get_project_users(request.params.id, function(users) {
+            var allowed = false;
+            var message = "You dont have permission to update this project";
 
-        if (!request.body['user_id']) {
-            errors.push('user_id field is required');
-        }
-
-        if (errors.length) {
-            response.status(400).send({
-                erros: errors,
+            users.forEach(function(user) {
+                if (user.id == request.authenticated_user_id) {
+                    if (user.role == 'project_admin') {
+                        allowed = true;
+                    } else {
+                        message = "You dont have permission to delete this project";
+                    }
+                }
             });
-        } else {
-            next();
-        }
+
+            if (allowed) {
+                var errors = [];
+
+                if (!request.body['user_id']) {
+                    errors.push('user_id field is required');
+                }
+
+                if (errors.length) {
+                    response.status(400).send({
+                        errors: errors,
+                    });
+                } else {
+                    next();
+                }
+
+            } else {
+                response.status(301).send(message);
+                next('router');
+            }
+
+        }, function(err) {
+            response.status(500).send(err);
+            next('router');
+        });
     },
 
     can_update(request, response, next)
@@ -102,7 +127,7 @@ module.exports = {
                     if (user.role == 'project_admin') {
                         allowed = true;
                     } else {
-                        "You dont have permission to delete this project"
+                        message = "You dont have permission to delete this project";
                     }
                 }
             });

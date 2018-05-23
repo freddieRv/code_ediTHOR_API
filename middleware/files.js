@@ -21,7 +21,7 @@ module.exports = {
 
         if (errors.length) {
             response.status(400).send({
-                erros: errors,
+                errors: errors,
             });
         } else {
             next();

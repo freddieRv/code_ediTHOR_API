@@ -10,8 +10,8 @@ router.get('/', controller.index);
 router.post('/', middleware.create_request, controller.store);
 router.get('/:id', controller.show);
 router.put('/:id', middleware.can_update, controller.update);
-router.put('/:id/add_user', middleware.can_update, middleware.add_user, controller.add_user);
-router.get('/:id/files', controller.files);
+router.put('/:id/add_user', middleware.add_user, controller.add_user);
+router.get('/:id/files', middleware.can_update, controller.files);
 router.post('/:id/files', middleware.can_update, files_middleware.create_request, controller.add_file);
 router.delete('/:id', middleware.can_delete, controller.destroy);
 
