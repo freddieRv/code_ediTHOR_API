@@ -17,16 +17,14 @@ class UsersController
     {
         User.find(request.params.id)
         .then(function(res) {
+
+            // TODO: get projects
+
             response.send(res);
         })
         .catch(function(err) {
             response.send(err);
         });
-    }
-
-    static store(request, response)
-    {
-        response.send('Users store');
     }
 
     static update(request, response)

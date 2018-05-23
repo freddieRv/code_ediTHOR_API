@@ -17,7 +17,8 @@ class User extends Model
         return [
             'email',
             'username',
-            'password'
+            'password',
+            'active'
         ];
     }
 
