@@ -164,6 +164,16 @@ class Query
         return this.exec();
     }
 
+    reverse_one_relationship(entity, related_entity, foreign_key, key)
+    {
+        console.log("SDFSFGYTRVERYTNUTGFD");
+        console.log(entity.data[foreign_key]);
+        this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + key} = ${entity.data[foreign_key]}`;
+        this.used_where_statement();
+
+        return this.exec();
+    }
+
     many_relationship(entity, related_entity, foreign_key, key, related_entity_foreign_key, intermediate_table)
     {
         this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + related_entity.primary_key()} IN`

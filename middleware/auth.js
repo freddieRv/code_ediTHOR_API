@@ -1,6 +1,7 @@
 const jwt  = require('jsonwebtoken');
 const env  = require('../env');
 const User = require('../models/user');
+const Role = require('../models/role');
 
 module.exports = {
 
@@ -72,6 +73,43 @@ module.exports = {
             });
         }
 
+    },
+
+    is_admin(request, response, next)
+    {
+        User.find(request.authenticated_user_id)
+        .then(function(users) {
+
+            if (!users.length) {
+                response.status(401).send("Failed to authenticate user");
+                next('router');
+                return;
+            }
+
+            var user = new User(users[0].data);
+
+            console.log("ROPTIPRIROI");
+
+            user.role(Role)
+            .then(function(role) {
+
+
+                if (role == "admin") {
+                    next();
+                } else {
+                    response.send().status("You don't have permission to do this action");
+                    next('router');
+                }
+
+            })
+            .catch(function(role_err) {
+                response.status(500).send(role_err)
+            });
+
+        })
+        .catch(function(users_err) {
+            response.status(500).send(users_err)
+        });
     }
 
 };

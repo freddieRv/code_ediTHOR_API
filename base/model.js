@@ -24,6 +24,12 @@ class Model
         return query.one_relationship(this, model, foreign_key, key);
     }
 
+    belongsToOne(model, foreign_key, key)
+    {
+        var query = new Query(model.table());
+        return query.reverse_one_relationship(this, model, foreign_key, key);
+    }
+
     belongsToMany(model, intermediate_table, foreign_key, related_entity_foreign_key, key=this.constructor.primary_key())
     {
         var query = new Query(model.table());

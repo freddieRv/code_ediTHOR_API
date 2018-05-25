@@ -31,6 +31,11 @@ class User extends Model
     {
         return this.belongsToMany(Project, 'project_user', 'user_id', 'project_id');
     }
+
+    role(Role)
+    {
+        return this.hasOneOrMany(Role, 'role_id', 'id');
+    }
 }
 
 module.exports = User;

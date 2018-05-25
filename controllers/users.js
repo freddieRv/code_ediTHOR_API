@@ -1,4 +1,5 @@
-const User = require('../models/user');
+const User    = require('../models/user');
+const Project = require('../models/project');
 
 class UsersController
 {
@@ -16,14 +17,32 @@ class UsersController
     static show(request, response)
     {
         User.find(request.params.id)
-        .then(function(res) {
+        .then(function(users) {
 
-            // TODO: get projects
+            if (!users.length) {
+                response.send({});
+                return;
+            }
 
-            response.send(res);
+            var user = new User(users[0].data);
+
+            user.projects(Project)
+            .then(function(projects) {
+                response.send({
+                    id:       user.data.id,
+                    username: user.data.username,
+                    email:    user.data.email,
+                    active:   user.data.active,
+                    projects: projects
+                });
+            })
+            .catch(function(projects_err) {
+                response.status(500).send(projects_err);
+            });
+
         })
-        .catch(function(err) {
-            response.send(err);
+        .catch(function(users_err) {
+            response.send(users_err);
         });
     }
 

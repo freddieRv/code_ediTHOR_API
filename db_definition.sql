@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     email    VARCHAR(30)  NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     active   BOOLEAN      NOT NULL DEFAULT 1,
+    role_id  INT(10)      NOT NULL,
     PRIMARY KEY (id)
 );
 
