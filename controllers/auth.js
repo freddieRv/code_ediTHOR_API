@@ -45,10 +45,11 @@ class AuthController
         .exec()
         .then(function(res) {
 
-            if (!res) {
+            if (!res.length) {
                 response.status(400).send({
                     message: 'This credentials don\'t match our records'
                 });
+                return;
             }
 
             var valid_password = bcrypt.compareSync(request.body.password, res[0].password);
