@@ -91,11 +91,10 @@ module.exports = {
             user.role(Role)
             .then(function(role) {
 
-
-                if (role == "admin") {
+                if (role[0].name == "admin") {
                     next();
                 } else {
-                    response.send().status("You don't have permission to do this action");
+                    response.status(401).send("You don't have permission to perform this action");
                     next('router');
                 }
 
