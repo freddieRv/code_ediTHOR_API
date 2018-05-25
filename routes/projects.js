@@ -4,8 +4,13 @@ const controller       = require('../controllers/projects');
 const middleware       = require('../middleware/projects');
 const auth_middleware  = require('../middleware/auth');
 const files_middleware = require('../middleware/files');
+const users_middleware = require('../middleware/users');
 
+// Middleware
 router.use(auth_middleware.auth);
+router.use(users_middleware.is_active);
+
+// Routes
 router.get('/', controller.index);
 router.post('/', middleware.create_request, controller.store);
 router.get('/:id', controller.show);

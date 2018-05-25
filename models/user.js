@@ -17,7 +17,8 @@ class User extends Model
         return [
             'email',
             'username',
-            'password'
+            'password',
+            'active'
         ];
     }
 
@@ -29,6 +30,11 @@ class User extends Model
     projects(Project)
     {
         return this.belongsToMany(Project, 'project_user', 'user_id', 'project_id');
+    }
+
+    role(Role)
+    {
+        return this.belongsToOne(Role, 'role_id', 'id');
     }
 }
 
