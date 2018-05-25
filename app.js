@@ -1,6 +1,9 @@
 var express = require('express');
 var app     = express();
 var router  = require('./routes');
+var path    = require('path');
+
+app.use(express.static(path.join(__dirname, 'storage')));
 
 app.use('/', router);
 

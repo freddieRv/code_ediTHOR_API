@@ -1,5 +1,7 @@
-const File  = require('../models/file');
-const shell = require('shelljs');
+const File       = require('../models/file');
+const SHELL      = require('shelljs');
+const FORMIDABLE = require('formidable');
+const FS         = require('fs');
 
 class FilesController
 {
@@ -39,7 +41,32 @@ class FilesController
 
     static exec(request, response)
     {
-        response.send("Yay!");
+        var form = new formidable.IncomingForm();
+
+        // specify that we don't want to allow the user to upload multiple files in a single request
+        form.multiples = false;
+
+        // store file in the /uploads directory
+        form.uploadDir = path.join(__dirname, '/storage');
+
+        // every time a file has been uploaded successfully,
+        // rename it to it's orignal name
+        form.on('file', function(field, file) {
+            fs.rename(file.path, path.join(form.uploadDir, file.name));
+        });
+
+        // log any errors that occur
+        form.on('error', function(err) {
+            console.log('An error has occured: \n' + err);
+        });
+
+        // once all the files have been uploaded, send a response to the client
+        form.on('end', function() {
+            res.end('success');
+        });
+
+        // parse the incoming request containing the form data
+        form.parse(req);
     }
 }
 
