@@ -48,12 +48,45 @@ class UsersController
 
     static update(request, response)
     {
-        response.send(`Edit user with id ${request.params.id}`);
+        User.find(request.params.id)
+        .then(function(users) {
+
+            var user = new User(users[0].data);
+
+            Object.keys(request.body).forEach(function(key) {
+                user.data[key] = request.body[key];
+            });
+
+            user.save()
+            .then(function(save_res) {
+                response.send({
+                    message: "User updated",
+                    project: user
+                });
+            })
+            .catch(function(save_err) {
+                response.send(err);
+            });
+
+        })
+        .catch(function(err) {
+            response.send(err);
+        });
     }
 
     static destroy(request, response)
     {
-        response.send(`Delete user with id ${request.params.id}`);
+        User.query()
+        .where('id', '=', request.params.id)
+        .destroy()
+        .then(function(res) {
+            response.send({
+                message: "user deleted"
+            });
+        })
+        .catch(function(err) {
+            response.status(500).send(err);
+        });
     }
 }
 
