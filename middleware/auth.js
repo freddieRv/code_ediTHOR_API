@@ -88,8 +88,6 @@ module.exports = {
 
             var user = new User(users[0].data);
 
-            console.log("ROPTIPRIROI");
-
             user.role(Role)
             .then(function(role) {
 

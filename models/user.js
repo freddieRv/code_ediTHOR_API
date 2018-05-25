@@ -34,7 +34,7 @@ class User extends Model
 
     role(Role)
     {
-        return this.hasOneOrMany(Role, 'role_id', 'id');
+        return this.belongsToOne(Role, 'role_id', 'id');
     }
 }
 

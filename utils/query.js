@@ -166,8 +166,6 @@ class Query
 
     reverse_one_relationship(entity, related_entity, foreign_key, key)
     {
-        console.log("SDFSFGYTRVERYTNUTGFD");
-        console.log(entity.data[foreign_key]);
         this.query_string += ` ${this.where_statement} ${related_entity.table() + '.' + key} = ${entity.data[foreign_key]}`;
         this.used_where_statement();
 
