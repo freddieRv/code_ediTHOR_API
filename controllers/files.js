@@ -1,4 +1,5 @@
-const File = require('../models/file');
+const File  = require('../models/file');
+const shell = require('shelljs');
 
 class FilesController
 {
@@ -34,6 +35,11 @@ class FilesController
         .catch(function(err) {
             response.status(500).send(err);
         });
+    }
+
+    static exec(request, response)
+    {
+        response.send("Yay!");
     }
 }
 
