@@ -1,6 +1,9 @@
-const Project = require('../models/project');
-const File    = require('../models/file');
-const User    = require('../models/user');
+const Project    = require('../models/project');
+const File       = require('../models/file');
+const User       = require('../models/user');
+const formidable = require('formidable');
+const fs         = require('fs');
+const path       = require('path');
 
 class ProjectsController
 {
@@ -62,11 +65,17 @@ class ProjectsController
 
         project.save()
         .then(function(project_res) {
+
+            var location = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+            fs.mkdirSync("storage/" + location);
+
             var root_dir = new File({
                name: '/',
                type: 'd',
                project_id: project_res.insertId,
                created_by: request.authenticated_user_id,
+               location: location,
             });
 
             project.data.id = project_res.insertId;
@@ -196,12 +205,46 @@ class ProjectsController
 
     static add_file(request, response)
     {
+        var form = new formidable.IncomingForm();
+
+        // specify that we don't want to allow the user to upload multiple files in a single request
+        form.multiples = false;
+
+        // store file in the storage directory
+        form.uploadDir = path.join('storage');
+
+        // every time a file has been uploaded successfully,
+        // rename it to it's orignal name
+        form.on('file', function(field, file) {
+            fs.renameSync(file.path, path.join(form.uploadDir, file.name));
+        });
+
+        // log any errors that occur
+        form.on('error', function(err) {
+            console.log('An error has occured: \n' + err);
+        });
+
+        // once all the files have been uploaded, send a response to the client
+        form.on('end', function() {
+            response.end('success');
+        });
+
+        // parse the incoming request containing the form data
+        form.parse(request);
+
+        var location = "";
+
+        // TODO: look up father dir and concat the location to the newly uploaded file location
+        // TODO: create hash name for the file
+        // TODO: return the response after file is saved
+
         var file = new File({
             name:       request.body.name,
             type:       request.body.type,
             project_id: request.params.id,
             created_by: request.authenticated_user_id,
             father_id:  request.body.father_id,
+            location: location,
         });
 
         file.save()
@@ -218,7 +261,7 @@ class ProjectsController
 
     static download(request, response)
     {
-        
+
     }
 }
 
