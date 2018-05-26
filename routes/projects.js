@@ -19,5 +19,6 @@ router.put('/:id/add_user', middleware.add_user, controller.add_user);
 router.get('/:id/files', middleware.can_update, controller.files);
 router.post('/:id/files', middleware.can_update, files_middleware.create_request, controller.add_file);
 router.delete('/:id', middleware.can_delete, controller.destroy);
+router.get('/:id/download', middleware.can_delete, controller.download);
 
 module.exports = router;

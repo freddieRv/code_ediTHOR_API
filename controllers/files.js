@@ -1,7 +1,8 @@
 const File       = require('../models/file');
-const SHELL      = require('shelljs');
-const FORMIDABLE = require('formidable');
-const FS         = require('fs');
+const shell      = require('shelljs');
+const formidable = require('formidable');
+const fs         = require('fs');
+const path       = require('path');
 
 class FilesController
 {
@@ -62,11 +63,11 @@ class FilesController
 
         // once all the files have been uploaded, send a response to the client
         form.on('end', function() {
-            res.end('success');
+            response.end('success');
         });
 
         // parse the incoming request containing the form data
-        form.parse(req);
+        form.parse(request);
     }
 }
 

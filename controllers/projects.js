@@ -215,6 +215,11 @@ class ProjectsController
             response.status(500).send(err);
         });
     }
+
+    static download(request, response)
+    {
+        
+    }
 }
 
 module.exports = ProjectsController;
