@@ -7,4 +7,5 @@ module.exports = {
         password: 'secret',
         name:     'some_name',
     },
+    storage_dir: 'storage',
 };

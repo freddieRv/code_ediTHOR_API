@@ -4,6 +4,7 @@ const User       = require('../models/user');
 const formidable = require('formidable');
 const fs         = require('fs');
 const path       = require('path');
+const env        = require('../env');
 
 class ProjectsController
 {
@@ -207,56 +208,91 @@ class ProjectsController
     {
         var form = new formidable.IncomingForm();
 
-        // specify that we don't want to allow the user to upload multiple files in a single request
-        form.multiples = false;
-
-        // store file in the storage directory
-        form.uploadDir = path.join('storage');
-
-        // every time a file has been uploaded successfully,
-        // rename it to it's orignal name
-        form.on('file', function(field, file) {
-            fs.renameSync(file.path, path.join(form.uploadDir, file.name));
+        form.parse(request, function(error, fields, files) {
+            // console.log(error, fields, files);
         });
 
-        // log any errors that occur
-        form.on('error', function(err) {
-            console.log('An error has occured: \n' + err);
-        });
-
-        // once all the files have been uploaded, send a response to the client
-        form.on('end', function() {
-            response.end('success');
-        });
-
-        // parse the incoming request containing the form data
-        form.parse(request);
 
         var location = "";
+
+        // File.find(request.body.father_id)
+        // .then(function(father) {
+        //
+        // })
+        // .catch(function(father_err) {
+        //
+        // });
 
         // TODO: look up father dir and concat the location to the newly uploaded file location
         // TODO: create hash name for the file
         // TODO: return the response after file is saved
+        // IDEA: A diferent route for creating dirs?
+        //       since when creating dirs no file upload is necesary
 
-        var file = new File({
-            name:       request.body.name,
-            type:       request.body.type,
-            project_id: request.params.id,
-            created_by: request.authenticated_user_id,
-            father_id:  request.body.father_id,
-            location: location,
-        });
+        // var file = new File({
+        //     name:       request.body.name,
+        //     type:       request.body.type,
+        //     project_id: request.params.id,
+        //     created_by: request.authenticated_user_id,
+        //     father_id:  request.body.father_id,
+        //     location: location,
+        // });
+        //
+        // file.save()
+        // .then(function(res) {
+        //     response.send({
+        //         message: 'File created',
+        //         file: file
+        //     });
+        // })
+        // .catch(function(err) {
+        //     response.status(500).send(err);
+        // });
+    }
 
-        file.save()
-        .then(function(res) {
-            response.send({
-                message: 'File created',
-                file: file
+    static add_dir(request, response)
+    {
+        File.find(request.body.father_id)
+        .then(function(files) {
+
+            if (!files.length) {
+                response.status(404).send("Father not found");
+                return;
+            }
+
+            var father = new File(files[0].data);
+
+            var location = env.storage_dir
+                         + '/'
+                         + father.data.location
+                         + '/'
+                         + Math.random().toString(36).substring(2, 15)
+                         + Math.random().toString(36).substring(2, 15);
+
+            fs.mkdirSync(location);
+
+            var dir = new File({
+                name:       request.body.name,
+                type:       'd',
+                project_id: request.params.id,
+                created_by: request.authenticated_user_id,
+                father_id:  request.body.father_id,
+                location:   location,
             });
+
+            dir.save()
+            .then(function(res) {
+                response.send("Directory created");
+            })
+            .catch(function(save_err) {
+                response.status(500).send(save_err);
+            });
+
         })
-        .catch(function(err) {
-            response.status(500).send(err);
+        .catch(function(file_err) {
+            response.status(500).send(file_err);
         });
+
     }
 
     static download(request, response)

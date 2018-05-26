@@ -118,6 +118,11 @@ class Project extends Model
             });
         });
     }
+
+    raw_files()
+    {
+        return this.hasOneOrMany(File, 'project_id');
+    }
 }
 
 module.exports = Project;
