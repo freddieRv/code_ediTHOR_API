@@ -168,22 +168,47 @@ class ProjectsController
         Project.find(request.params.id)
         .then(function(res) {
             var project = new Project(res[0].data);
-            var user    = new User({id: request.body.user_id});
 
-            project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: 5})
-            .then(function(res) {
-                response.send({
-                    message: "User added to project",
+            User.query()
+            .where('username', '=', request.body.user)
+            .orWhere('email', '=', request.body.user)
+            .exec()
+            .then(function(users) {
+
+                if (!users.length) {
+                    response.statsu(404).send({
+                        message: "User not found"
+                    });
+
+                    return;
+                }
+
+                var user = new User(users[0]);
+
+                project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: request.body.role})
+                .then(function(res) {
+                    response.send({
+                        message: "User added to project",
+                    });
+                })
+                .catch(function(err) {
+                    response.send(err);
                 });
+
             })
-            .catch(function(err) {
-                response.send(err);
+            .catch(function(user_err) {
+                response.status(500).send(user_err);
             });
 
         })
         .catch(function(err) {
             response.send(err);
         });
+    }
+
+    static remove_user(request, response)
+    {
+
     }
 
     static files(request, response)

@@ -1,5 +1,4 @@
 const File      = require('../models/file');
-const shell     = require('shelljs');
 const compilers = require('../utils/compilers');
 const fs        = require('fs');
 const env       = require('../env');
@@ -45,7 +44,9 @@ class FilesController
         .then(function(files) {
 
             if (files[0].data.type == "d") {
-                response.status(400).send("Requested file is a directory");
+                response.status(400).send({
+                    message: "Requested file is a directory"
+                });
                 return;
             }
 
@@ -76,7 +77,9 @@ class FilesController
 
                 file.save()
                 .then(function(save_res) {
-                    response.send("File updated");
+                    response.send({
+                        message: "File updated",
+                    });
                 })
                 .catch(function(save_err) {
                     response.status(500).send(save_err);
@@ -130,7 +133,9 @@ class FilesController
                 return;
             }
 
-            var command = compilers.command(files[0].location, files[0].name);
+            var console_log = compilers.run(files[0].data.location, files[0].data.name);
+
+            response.send(console_log);
 
         })
         .catch(function(file_err) {

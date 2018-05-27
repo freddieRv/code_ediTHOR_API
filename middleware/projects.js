@@ -69,8 +69,12 @@ module.exports = {
             if (allowed) {
                 var errors = [];
 
-                if (!request.body['user_id']) {
-                    errors.push('user_id field is required');
+                if (!request.body['user']) {
+                    errors.push('user field is required');
+                }
+
+                if (!request.body['role']) {
+                    errors.push('role field is required');
                 }
 
                 if (errors.length) {
@@ -90,6 +94,11 @@ module.exports = {
             response.status(500).send(err);
             next('router');
         });
+    },
+
+    remove_user(request, response, next)
+    {
+
     },
 
     can_update(request, response, next)

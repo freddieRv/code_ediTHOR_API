@@ -92,7 +92,8 @@ class Project extends Model
                         current_tree = {
                             "id": e.id,
                             "text": e.name,
-                            "children": []
+                            "children": [],
+                            "type": "d"
                         };
 
                         file_tree[0] = current_tree;
@@ -106,7 +107,8 @@ class Project extends Model
                             "id": e.id,
                             "text": e.name,
                             "children": [],
-                            "father_id": e.father_id
+                            "father_id": e.father_id,
+                            "type": e.type
                         });
                     }
                 });
