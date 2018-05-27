@@ -4,6 +4,7 @@ const User    = require('../models/user');
 const fs      = require('fs');
 const path    = require('path');
 const env     = require('../env');
+const zipper  = require("zip-local");
 
 class ProjectsController
 {
@@ -66,12 +67,14 @@ class ProjectsController
         project.save()
         .then(function(project_res) {
 
-            var location = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            var location = project.data.name
+                         + "_"
+                         + Math.random().toString(36).substring(2, 15);
 
-            fs.mkdirSync("storage/" + location);
+            fs.mkdirSync(env.storage_dir + location);
 
             var root_dir = new File({
-               name: '/',
+               name: location,
                type: 'd',
                project_id: project_res.insertId,
                created_by: request.authenticated_user_id,
@@ -217,13 +220,12 @@ class ProjectsController
 
             var location = father.data.location
                          + '/'
-                         + Math.random().toString(36).substring(2, 15)
-                         + Math.random().toString(36).substring(2, 15);
+                         + request.body.name;
 
             var content = Buffer.from(request.body.file, 'base64');
 
             try {
-                fs.writeFileSync(location, content);
+                fs.writeFileSync(env.storage_dir + location, content);
             } catch (e) {
                 response.status(500).send(e);
                 return;
@@ -265,14 +267,11 @@ class ProjectsController
 
             var father = new File(files[0].data);
 
-            var location = env.storage_dir
+            var location = father.data.location
                          + '/'
-                         + father.data.location
-                         + '/'
-                         + Math.random().toString(36).substring(2, 15)
-                         + Math.random().toString(36).substring(2, 15);
+                         + request.body.name;
 
-            fs.mkdirSync(location);
+            fs.mkdirSync(env.storage_dir + location);
 
             var dir = new File({
                 name:       request.body.name,
@@ -300,7 +299,27 @@ class ProjectsController
 
     static download(request, response)
     {
+        Project.find(request.params.id)
+        .then(function(projects) {
 
+            var project = new Project(projects[0].data);
+
+            project.file_tree()
+            .then(function(file_tree) {
+                var root_dir = env.storage_dir + file_tree[0].text;
+                var zipped   = env.storage_dir + project.data.name + ".zip"
+                zipper.sync.zip(root_dir).compress().save(zipped);
+
+                response.download(zipped);
+            })
+            .catch(function(file_tree_err) {
+                response.status(500).send(file_tree_err);
+            });
+
+        })
+        .catch(function(project_err) {
+            response.status(500).send(project_err);
+        });
     }
 }
 
