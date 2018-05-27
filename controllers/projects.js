@@ -1,10 +1,9 @@
-const Project    = require('../models/project');
-const File       = require('../models/file');
-const User       = require('../models/user');
-const formidable = require('formidable');
-const fs         = require('fs');
-const path       = require('path');
-const env        = require('../env');
+const Project = require('../models/project');
+const File    = require('../models/file');
+const User    = require('../models/user');
+const fs      = require('fs');
+const path    = require('path');
+const env     = require('../env');
 
 class ProjectsController
 {
@@ -206,48 +205,52 @@ class ProjectsController
 
     static add_file(request, response)
     {
-        var form = new formidable.IncomingForm();
+        File.find(request.body.father_id)
+        .then(function(files) {
 
-        form.parse(request, function(error, fields, files) {
-            // console.log(error, fields, files);
+            if (!files.length) {
+                response.status(404).send("Father not found");
+                return;
+            }
+
+            var father = new File(files[0].data);
+
+            var location = father.data.location
+                         + '/'
+                         + Math.random().toString(36).substring(2, 15)
+                         + Math.random().toString(36).substring(2, 15);
+
+            var content = Buffer.from(request.body.file, 'base64');
+
+            try {
+                fs.writeFileSync(location, content);
+            } catch (e) {
+                response.status(500).send(e);
+                return;
+            }
+
+            var file = new File({
+                name:       request.body.name,
+                type:       'f',
+                project_id: request.params.id,
+                created_by: request.authenticated_user_id,
+                father_id:  request.body.father_id,
+                location:   location,
+            });
+
+            file.save()
+            .then(function(res) {
+                response.send("File created");
+            })
+            .catch(function(save_err) {
+                response.status(500).send(save_err);
+            });
+
+        })
+        .catch(function(file_err) {
+            response.status(500).send(file_err);
         });
 
-
-        var location = "";
-
-        // File.find(request.body.father_id)
-        // .then(function(father) {
-        //
-        // })
-        // .catch(function(father_err) {
-        //
-        // });
-
-        // TODO: look up father dir and concat the location to the newly uploaded file location
-        // TODO: create hash name for the file
-        // TODO: return the response after file is saved
-        // IDEA: A diferent route for creating dirs?
-        //       since when creating dirs no file upload is necesary
-
-        // var file = new File({
-        //     name:       request.body.name,
-        //     type:       request.body.type,
-        //     project_id: request.params.id,
-        //     created_by: request.authenticated_user_id,
-        //     father_id:  request.body.father_id,
-        //     location: location,
-        // });
-        //
-        // file.save()
-        // .then(function(res) {
-        //     response.send({
-        //         message: 'File created',
-        //         file: file
-        //     });
-        // })
-        // .catch(function(err) {
-        //     response.status(500).send(err);
-        // });
     }
 
     static add_dir(request, response)

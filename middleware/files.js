@@ -1,34 +1,29 @@
-const formidable = require('formidable');
-const Project    = require('../models/project');
+const Project = require('../models/project');
 
 module.exports = {
     create_file_request(request, response, next)
     {
-        var form = new formidable.IncomingForm();
+        var errors = [];
 
-        form.parse(request, function(error, fields, files) {
-            var errors = [];
+        if (!request.body['name']) {
+            errors.push('name field is required');
+        }
 
-            if (!fields.name) {
-                errors.push('name field is required');
-            }
+        if (!request.body['father_id']) {
+            errors.push('father_id field is required');
+        }
 
-            if (!fields.father_id) {
-                errors.push('father_id field is required');
-            }
+        if (!request.body['file']) {
+            errors.push('no file uploaded');
+        }
 
-            if (!files.file) {
-                errors.push('no file uploaded');
-            }
-
-            if (errors.length) {
-                response.status(400).send({
-                    errors: errors,
-                });
-            } else {
-                next();
-            }
-        });
+        if (errors.length) {
+            response.status(400).send({
+                errors: errors,
+            });
+        } else {
+            next();
+        }
     },
 
     create_dir_request(request, response, next)
@@ -89,5 +84,6 @@ module.exports = {
             response.status(500).send(files_err);
         });
 
-    }
+    },
+
 }

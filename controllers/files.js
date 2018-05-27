@@ -1,5 +1,6 @@
-const File       = require('../models/file');
-const shell      = require('shelljs');
+const File      = require('../models/file');
+const shell     = require('shelljs');
+const compilers = require('../utils/compilers');
 
 class FilesController
 {
@@ -39,7 +40,20 @@ class FilesController
 
     static exec(request, response)
     {
-        
+        File.find(request.params.id)
+        .then(function(files) {
+            if (!files.length) {
+                response.status(404).send("File not found");
+                return;
+            }
+
+            var command = compilers.command(files[0].location, files[0].name);
+
+        })
+        .catch(function(file_err) {
+            response.status(500).send(file_err);
+        });
+
     }
 }
 
