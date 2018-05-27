@@ -18,7 +18,7 @@ router.post('/', middleware.create_request, controller.store);
 router.get('/:id', controller.show);
 router.put('/:id', middleware.can_update, controller.update);
 router.post('/:id/add_user', middleware.add_user, controller.add_user);
-router.get('/:id/remove_user', middleware.remove_user, controller.remove_user);
+router.post('/:id/remove_user', middleware.remove_user, controller.remove_user);
 router.get('/:id/files', middleware.can_update, controller.files);
 router.post('/:id/files', middleware.can_update, files_middleware.create_file_request, files_middleware.father_belongs_to_project, controller.add_file);
 router.post('/:id/dir', middleware.can_update, files_middleware.create_dir_request, files_middleware.father_belongs_to_project, controller.add_dir);

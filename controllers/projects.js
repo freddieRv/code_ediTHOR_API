@@ -33,6 +33,7 @@ class ProjectsController
 
         Project.find(request.params.id)
         .then(function(project_res) {
+
             project = new Project(project_res[0].data);
 
             project.file_tree()
@@ -208,7 +209,30 @@ class ProjectsController
 
     static remove_user(request, response)
     {
+        Project.find(request.params.id)
+        .then(function(projects) {
+            if (!projects.length) {
+                response.status(404).send({
+                    message: "Project not found"
+                });
+            }
 
+            var project = new Project(projects[0].data);
+
+            project.remove_user(request.body.user_id)
+            .then(function(res) {
+                response.send({
+                    message: "User removed from project"
+                });
+            })
+            .catch(function(remove_err) {
+                response.status(500).send(remove_err);
+            });
+
+        })
+        .catch(function(projects_err) {
+            response.status(500).send(project_err);
+        });
     }
 
     static files(request, response)

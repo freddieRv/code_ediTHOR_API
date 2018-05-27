@@ -98,7 +98,19 @@ module.exports = {
 
     remove_user(request, response, next)
     {
+        var errors = [];
 
+        if (!request.body['user_id']) {
+            errors.push("user_id field is required");
+        }
+
+        if (errors.length) {
+            response.status(400).send({
+                errors: errors,
+            });
+        } else {
+            next();
+        }
     },
 
     can_update(request, response, next)

@@ -73,8 +73,14 @@ module.exports = {
                         if (!users.length) {
                             response.status(500).send('Failed to authenticate token');
                         } else {
-                            request.authenticated_user_id = decoded.id;
-                            next();
+                            if (!users[0].data.active) {
+                                response.status(401).send({
+                                    message: 'User is inactive',
+                                });
+                            } else {
+                                request.authenticated_user_id = decoded.id;
+                                next();
+                            }
                         }
                     })
                     .catch(function(user_err) {

@@ -125,6 +125,18 @@ class Project extends Model
     {
         return this.hasOneOrMany(File, 'project_id');
     }
+
+    remove_user(user_id)
+    {
+        var query = new Query();
+        var query_string = `
+            DELETE FROM project_user
+            WHERE project_id = ${this.data[this.constructor.primary_key()]}
+            AND user_id = ${user_id}
+        `;
+
+        return query.exec(query_string);
+    }
 }
 
 module.exports = Project;
