@@ -22,6 +22,5 @@ router.get('/:id/files', middleware.can_update, controller.files);
 router.post('/:id/files', middleware.can_update, files_middleware.create_file_request, files_middleware.father_belongs_to_project, controller.add_file);
 router.post('/:id/dir', middleware.can_update, files_middleware.create_dir_request, files_middleware.father_belongs_to_project, controller.add_dir);
 router.delete('/:id', middleware.can_delete, controller.destroy);
-// router.get('/:id/download', middleware.can_delete, controller.download);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "980129c1-8338-4a59-9091-b70efc331ccb",
+		"_postman_id": "5f78d70f-f06d-4511-bce2-22e705bc22f8",
 		"name": "code_edithor",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -92,13 +92,13 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{URL}}/projects/2",
+							"raw": "{{URL}}/projects/1",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"projects",
-								"2"
+								"1"
 							]
 						}
 					},
@@ -119,12 +119,12 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "SOMENAME",
+									"value": "MY_PROJECT",
 									"type": "text"
 								},
 								{
 									"key": "description",
-									"value": "what",
+									"value": "this is a test projecct",
 									"type": "text"
 								}
 							]
@@ -163,6 +163,31 @@
 							"path": [
 								"projects",
 								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "download",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{URL}}/projects/7/download",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"projects",
+								"7",
+								"download"
 							]
 						}
 					},
@@ -229,22 +254,22 @@
 							"urlencoded": [
 								{
 									"key": "username",
-									"value": "fede",
+									"value": "freddie",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "dfgfdsghgcdfbvdvf75dffdg",
+									"value": "what",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "123456",
+									"value": "password",
 									"type": "text"
 								},
 								{
 									"key": "password_confirmation",
-									"value": "123456",
+									"value": "password",
 									"type": "text"
 								}
 							]
@@ -268,9 +293,105 @@
 			"description": null,
 			"item": [
 				{
-					"name": "store",
+					"name": "store file",
 					"request": {
 						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "testytest.cpp",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "father_id",
+									"value": "2",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"value": "I2lmbmRlZiBfX09QVElNSVpFUl9IX18KI2RlZmluZSBfX09QVElNSVpFUl9IX18KCiNpbmNsdWRl\nIDxzc3RyZWFtPgojaW5jbHVkZSA8b3N0cmVhbT4KI2luY2x1ZGUgPHVub3JkZXJlZF9tYXA+CiNp\nbmNsdWRlICJpbmRpdmlkdWFsLmgiCgpjbGFzcyBPcHRpbWl6ZXIKewogICAgcHJvdGVjdGVkOgoK\nICAgICAgICBzdGF0aWMgY29uc3RleHByIGRvdWJsZSBERUZfVVBQRVJfQk9VTkRTID0gMS4wOwog\nICAgICAgIHN0YXRpYyBjb25zdGV4cHIgZG91YmxlIERFRl9MT1dFUl9CT1VORFMgPSAwLjA7CiAg\nICAgICAgc3RhdGljIGNvbnN0ZXhwciBkb3VibGUgREVGX0RJTUVOU0lPTlMgICA9IDI7CgogICAg\nICAgIC8qKgogICAgICAgICAqIFRoZSBmdW5jdGlvbiB0byBiZSBvcHRpbWl6ZWQKICAgICAgICAg\nKi8KICAgICAgICBkb3VibGUgKCpvYmplY3RpdmVfZnVuY3Rpb24pKGludCwgZG91YmxlKik7Cgog\nICAgICAgIC8qKgogICAgICAgICAqIEFsZ29yaXRobSBwYXJhbWV0ZXJzCiAgICAgICAgICovCiAg\nICAgICAgc3RkOjp1bm9yZGVyZWRfbWFwPHN0ZDo6c3RyaW5nLCBkb3VibGU+IHBhcmFtczsKCiAg\nICAgICAgLyoqCiAgICAgICAgICogRXZhbHVhdGVzIHRoZSBvYmplY3RpdmUgZnVuY3Rpb24KICAg\nICAgICAgKi8KICAgICAgICBkb3VibGUgZXZhbHVhdGVfb2JqZWN0aXZlX2Z1bmN0aW9uKHN0ZDo6\ndmVjdG9yPGRvdWJsZT4pOwoKICAgIHB1YmxpYzoKCiAgICAgICAgLyoqCiAgICAgICAgICogQ3Jl\nYXRlcyBhIG5ldyBPcHRpbWl6ZXIgb2JqZWN0CiAgICAgICAgICoKICAgICAgICAgKiBAcGFyYW0g\nZG91YmxlICgqKShpbnQsIGRvdWJsZSopIG9iamVjdGl2ZSBmdW5jdGlvbgogICAgICAgICAqIEBw\nYXJhbSBzdGQ6OnVub3JkZXJlZF9tYXA8c3RkOjpzdHJpbmcsIGRvdWJsZT4gYSBoYXNoIG1hcCBj\nb250YWluaW5nIGFsbCB0dW5pbmcgdmFyaWFibGVzCiAgICAgICAgICovCiAgICAgICAgT3B0aW1p\nemVyKGRvdWJsZSAoKikoaW50LCBkb3VibGUqKSwgc3RkOjp1bm9yZGVyZWRfbWFwPHN0ZDo6c3Ry\naW5nLCBkb3VibGU+KTsKCiAgICAgICAgLyoqCiAgICAgICAgICogRnJlZXMgcmVzb3VyY2VzIHVz\nZWQgYnkgT3B0aW1pemVyIG9iamVjdHMKICAgICAgICAgKi8KICAgICAgICB2aXJ0dWFsIH5PcHRp\nbWl6ZXIoKSB7fQoKICAgICAgICAvKioKICAgICAgICAgKiBNYWluIGZ1bmN0aW9uIHRvIGJlIGNh\nbGxlZCB0byBvcHRpbWl6ZSB0aGUgb2JqZWN0aXZlIGZ1bmN0aW9uLgogICAgICAgICAqCiAgICAg\nICAgICogQHJldHVybiBkb3VibGUgdGhlIG1pbiB2YWx1ZSBvYnRhaW5lZAogICAgICAgICAqLwog\nICAgICAgIHZpcnR1YWwgSW5kaXZpZHVhbCogb3B0aW1pemUoKSA9IDA7CgogICAgICAgIC8qKgog\nICAgICAgICAqIFN0cmluZyByZXByZXNlbnRhdGlvbiBvZiBhbiBPcHRpbWl6ZXIgb2JqZWN0CiAg\nICAgICAgICovCiAgICAgICAgc3RkOjpzdHJpbmcgdG9fc3RyaW5nKCkgY29uc3Q7CgogICAgZnJp\nZW5kIHN0ZDo6b3N0cmVhbSYgb3BlcmF0b3I8PChzdGQ6Om9zdHJlYW0mLCBjb25zdCBPcHRpbWl6\nZXImKTsKfTsKCiNlbmRpZgo=",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/projects/1/files",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"projects",
+								"1",
+								"files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "store dir",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "some_dir",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "father_id",
+									"value": "1",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/projects/1/dir",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"projects",
+								"1",
+								"dir"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
 						"header": [
 							{
 								"key": "x-access-token",
@@ -281,32 +402,123 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
+									"key": "content",
+									"value": "cHJpbnQgIkhlbGxvIFdvcmxkIgoKZm9yIGkgaW4gcmFuZ2UoMTApOgoJcHJpbnQgaQo=",
+									"description": "",
+									"type": "text"
+								},
+								{
 									"key": "name",
-									"value": "sdfsdf",
-									"description": "`",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "d",
-									"type": "text"
-								},
-								{
-									"key": "father_id",
-									"value": "15",
+									"value": "yesplease.py",
+									"description": "",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "{{URL}}/projects/2/files",
+							"raw": "{{URL}}/files/5",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"projects",
-								"2",
-								"files"
+								"files",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destroy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/files/5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"files",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "exec",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"value": "",
+									"description": "",
+									"type": "file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/files/18/exec",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"files",
+								"18",
+								"exec"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"value": "",
+									"description": "",
+									"type": "file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/files/5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"files",
+								"5"
 							]
 						}
 					},
@@ -316,7 +528,7 @@
 		},
 		{
 			"name": "users",
-			"description": "",
+			"description": null,
 			"item": [
 				{
 					"name": "index",
@@ -328,7 +540,10 @@
 								"value": "{{auth_token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{URL}}/users/",
 							"host": [
@@ -352,7 +567,10 @@
 								"value": "{{auth_token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{URL}}/users/8",
 							"host": [
@@ -376,7 +594,10 @@
 								"value": "{{auth_token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{URL}}/users/8",
 							"host": [
@@ -400,7 +621,10 @@
 								"value": "{{auth_token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{URL}}/users/8",
 							"host": [

@@ -216,16 +216,12 @@ class ProjectsController
                 return;
             }
 
-            var father = new File(files[0].data);
-
-            var location = father.data.location
-                         + '/'
-                         + request.body.name;
-
-            var content = Buffer.from(request.body.file, 'base64');
+            var father   = new File(files[0].data);
+            var content  = Buffer.from(request.body.file, 'base64');
+            var location = father.data.location + '/';
 
             try {
-                fs.writeFileSync(env.storage_dir + location, content);
+                fs.writeFileSync(env.storage_dir + location + request.body.name, content);
             } catch (e) {
                 response.status(500).send(e);
                 return;

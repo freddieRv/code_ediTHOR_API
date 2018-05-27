@@ -1,4 +1,5 @@
 const Project = require('../models/project');
+const User    = require('../models/user');
 
 module.exports = {
     create_file_request(request, response, next)
@@ -85,5 +86,41 @@ module.exports = {
         });
 
     },
+
+    can_show(request, response, next)
+    {
+
+        User.find(request.authenticated_user_id)
+        .then(function(users) {
+            var user = new User(users[0].data);
+
+            user.files()
+            .then(function(files) {
+                var allowed = false;
+
+                for (var i = 0; i < files.length; i++) {
+                    if (files[i].id == request.params.id) {
+                        allowed = true;
+                        break;
+                    }
+                }
+
+                if (!allowed) {
+                    response.status(401).send("You don't have permission to open this file");
+                    next("router");
+                    return;
+                }
+
+                next();
+            })
+            .catch(function(files_err) {
+                response.status(500).send(files_err);
+            });
+
+        })
+        .catch(function(user_err) {
+            response.status(500).send(user_err);
+        });
+    }
 
 }

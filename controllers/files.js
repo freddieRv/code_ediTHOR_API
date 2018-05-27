@@ -1,6 +1,8 @@
 const File      = require('../models/file');
 const shell     = require('shelljs');
 const compilers = require('../utils/compilers');
+const fs        = require('fs');
+const env       = require('../env');
 
 class FilesController
 {
@@ -9,9 +11,28 @@ class FilesController
         File.find(request.params.id)
         .then(function(res) {
 
-            // TODO: send the actual file instead of the db entity
-            // response.download(res.location, res.name);
-            response.send(res);
+            if (res[0].data.type == "d") {
+                response.status(400).send("Requested file is a directory");
+                return;
+            }
+
+            var file_path = env.storage_dir + res[0].data.location + res[0].data.name;
+
+            fs.readFile(file_path, function read(err, content) {
+                if (err) {
+                    response.status(500).send(err);
+                    return;
+                }
+
+                var encoded = Buffer.from(content).toString('base64');
+
+                response.send({
+                    id:      res[0].data.id,
+                    name:    res[0].data.name,
+                    content: encoded,
+                });
+            });
+
         })
         .catch(function(err) {
             response.send(err);
@@ -20,22 +41,84 @@ class FilesController
 
     static update(request, response)
     {
-        response.send(`Edit file with id ${request.params.id}`);
+        File.find(request.params.id)
+        .then(function(files) {
+
+            if (files[0].data.type == "d") {
+                response.status(400).send("Requested file is a directory");
+                return;
+            }
+
+            var file     = new File(files[0].data);
+            var old_name = 0;
+
+            if (request.body['name']) {
+                old_name       = files[0].data.name;
+                file.data.name = request.body['name'];
+            }
+
+            if (request.body['content']) {
+                var buffered_content = Buffer.from(request.body.content, 'base64');
+                var file_path        = env.storage_dir + file.data.location + file.data.name;
+
+                try {
+
+                    fs.writeFileSync(file_path, buffered_content);
+
+                    if (old_name && old_name != file.data.name) {
+                        fs.unlinkSync(env.storage_dir + file.data.location + old_name);
+                    }
+
+                } catch (e) {
+                    response.status(500).send(e);
+                    return;
+                }
+
+                file.save()
+                .then(function(save_res) {
+                    response.send("File updated");
+                })
+                .catch(function(save_err) {
+                    response.status(500).send(save_err);
+                });
+
+            }
+
+        })
+        .catch(function(err) {
+            response.send(err);
+        });
     }
 
     static destroy(request, response)
     {
-        File.query()
-        .where('id', '=', request.params.id)
-        .destroy()
-        .then(function(res) {
-            response.send({
-                message: 'File deleted',
+        File.find(request.params.id)
+        .then(function(files) {
+
+            var path_to_delete = env.storage_dir + files[0].data.location + files[0].data.name;
+
+            File.query()
+            .where('id', '=', request.params.id)
+            .destroy()
+            .then(function(res) {
+
+                try {
+                    fs.unlinkSync(path_to_delete);
+                } catch (e) {}
+
+                response.send({
+                    message: 'File deleted',
+                });
+            })
+            .catch(function(err) {
+                response.status(500).send(err);
             });
+
         })
-        .catch(function(err) {
-            response.status(500).send(err);
+        .catch(function(find_err) {
+            response.status(500).send(find_err);
         });
+
     }
 
     static exec(request, response)
