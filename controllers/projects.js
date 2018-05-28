@@ -177,7 +177,7 @@ class ProjectsController
             .then(function(users) {
 
                 if (!users.length) {
-                    response.statsu(404).send({
+                    response.status(404).send({
                         message: "User not found"
                     });
 
@@ -186,14 +186,37 @@ class ProjectsController
 
                 var user = new User(users[0]);
 
-                project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: request.body.role})
-                .then(function(res) {
-                    response.send({
-                        message: "User added to project",
+                project.users()
+                .then(function(users_res) {
+
+                    var belongs_to_project = false;
+
+                    for (var i = 0; i < users_res.length; i++) {
+                        if (users_res[i].id == user.data.id) {
+                            belongs_to_project = true;
+                        }
+                    }
+
+                    if (belongs_to_project) {
+                        response.status(400).send({
+                            message: "User already belongs to project"
+                        });
+                        return;
+                    }
+
+                    project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: request.body.role})
+                    .then(function(res) {
+                        response.send({
+                            message: "User added to project",
+                        });
+                    })
+                    .catch(function(err) {
+                        response.send(err);
                     });
+
                 })
-                .catch(function(err) {
-                    response.send(err);
+                .catch(function(users_err) {
+                    response.status(500).send(users_err);
                 });
 
             })

@@ -86,7 +86,7 @@ module.exports = {
                 }
 
             } else {
-                response.status(301).send(message);
+                response.status(401).send(message);
                 next('router');
             }
 
@@ -127,7 +127,7 @@ module.exports = {
             if (allowed) {
                 next();
             } else {
-                response.status(301).send("You dont have permission to update this project");
+                response.status(401).send("You dont have permission to update this project");
                 next('router');
             }
 
@@ -141,14 +141,11 @@ module.exports = {
     {
         get_project_users(request.params.id, function(users) {
             var allowed = false;
-            var message = "You dont have permission to update this project";
 
             users.forEach(function(user) {
                 if (user.id == request.authenticated_user_id) {
                     if (user.role == 'project_admin') {
                         allowed = true;
-                    } else {
-                        message = "You dont have permission to delete this project";
                     }
                 }
             });
@@ -156,7 +153,7 @@ module.exports = {
             if (allowed) {
                 next();
             } else {
-                response.status(301).send(message);
+                response.status(401).send("You dont have permission to perform this action");
                 next('router');
             }
 
