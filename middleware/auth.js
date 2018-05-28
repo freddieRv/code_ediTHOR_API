@@ -139,6 +139,51 @@ module.exports = {
         .catch(function(users_err) {
             response.status(500).send(users_err)
         });
+    },
+
+    query_string_auth(request, response, next)
+    {
+        var token = request.query['token'];
+
+        if (!token) {
+            response.status(401).send({
+                message: "No auth token provided"
+            });
+
+            next('router');
+        } else {
+            jwt.verify(token, env.app_key, function(err, decoded) {
+                if (err) {
+                    response.status(500).send({
+                        message: "Failed to authenticate token"
+                    });
+                } else {
+
+                    User.find(decoded.id)
+                    .then(function(users) {
+                        if (!users.length) {
+                            response.status(500).send({
+                                message: "Failed to authenticate token"
+                            });
+                        } else {
+                            if (!users[0].data.active) {
+                                response.status(401).send({
+                                    message: 'User is inactive',
+                                });
+                            } else {
+                                request.authenticated_user_id = decoded.id;
+                                next();
+                            }
+                        }
+                    })
+                    .catch(function(user_err) {
+                        response.status(500).send({
+                            message: "Failed to authenticate token"
+                        });
+                    });
+                }
+            });
+        }
     }
 
 };

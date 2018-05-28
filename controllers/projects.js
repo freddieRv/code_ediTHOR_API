@@ -57,6 +57,14 @@ class ProjectsController
         Project.find(request.params.id)
         .then(function(project_res) {
 
+            if (!project_res.length) {
+                response.status(404).send({
+                    message: "Project not found"
+                });
+
+                return;
+            }
+
             project = new Project(project_res[0].data);
 
             project.file_tree()
@@ -402,6 +410,14 @@ class ProjectsController
     {
         Project.find(request.params.id)
         .then(function(projects) {
+
+            if (!projects.length) {
+                response.status(404).send({
+                    message: "Project not found"
+                });
+
+                return;
+            }
 
             var project = new Project(projects[0].data);
 

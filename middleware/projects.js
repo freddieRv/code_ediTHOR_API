@@ -134,7 +134,7 @@ module.exports = {
                 next();
             } else {
                 response.status(401).send({
-                    message: "You dont have permission to update this project"
+                    message: "You dont have permission to perform this action"
                 });
 
                 next('router');
@@ -206,5 +206,33 @@ module.exports = {
             response.status(500).send(err);
             next('router');
         });
+    },
+
+    can_download(request, response, next)
+    {
+        get_project_users(request.params.id, function(users) {
+            var allowed = false;
+
+            users.forEach(function(user) {
+                if (user.id == request.authenticated_user_id) {
+                    allowed = true;
+                }
+            });
+
+            if (allowed) {
+                next();
+            } else {
+                response.status(401).send({
+                    message: "You dont have permission to perform this action"
+                });
+
+                next('router');
+            }
+
+        }, function(err) {
+            response.status(500).send(err);
+            next('router');
+        });
     }
+
 }
