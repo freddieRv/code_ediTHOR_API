@@ -7,7 +7,10 @@ function get_project_users(project_id, success, fail)
     .then(function(projects) {
 
         if (projects == false) {
-            fail('Project not found');
+            fail({
+                message: 'Project not found'
+            });
+            
             return;
         }
 
@@ -162,7 +165,7 @@ module.exports = {
                 response.status(401).send({
                     message: "You dont have permission to perform this action"
                 });
-                
+
                 next('router');
             }
 

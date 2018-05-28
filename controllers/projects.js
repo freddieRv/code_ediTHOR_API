@@ -6,6 +6,22 @@ const path    = require('path');
 const env     = require('../env');
 const zipper  = require("zip-local");
 
+function filter_projects(projects, filter)
+{
+    var filtered_projects = [];
+    var match = 0;
+
+    for (var i = 0; i < projects.length; i++) {
+        match = projects[i].name.search(filter);
+
+        if (match != -1) {
+            filtered_projects.push(projects[i]);
+        }
+    }
+
+    return filtered_projects
+}
+
 class ProjectsController
 {
     static index(request, response)
@@ -16,7 +32,14 @@ class ProjectsController
 
             user.projects(Project)
             .then(function(projects) {
-                response.send(projects);
+
+                var res_projects = projects;
+
+                if (request.query['filter']) {
+                    res_projects = filter_projects(projects, request.query.filter);
+                }
+
+                response.send(res_projects);
             })
             .catch(function(err) {
                 response.status(500).send(err);
