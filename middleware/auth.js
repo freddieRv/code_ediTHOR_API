@@ -60,18 +60,25 @@ module.exports = {
         var token = request.headers['x-access-token'];
 
         if (!token) {
-            response.status(401).send("No auth token provided");
+            response.status(401).send({
+                message: "No auth token provided"
+            });
+
             next('router');
         } else {
             jwt.verify(token, env.app_key, function(err, decoded) {
                 if (err) {
-                    response.status(500).send('Failed to authenticate token');
+                    response.status(500).send({
+                        message: "Failed to authenticate token"
+                    });
                 } else {
 
                     User.find(decoded.id)
                     .then(function(users) {
                         if (!users.length) {
-                            response.status(500).send('Failed to authenticate token');
+                            response.status(500).send({
+                                message: "Failed to authenticate token"
+                            });
                         } else {
                             if (!users[0].data.active) {
                                 response.status(401).send({
@@ -84,7 +91,9 @@ module.exports = {
                         }
                     })
                     .catch(function(user_err) {
-                        response.status(500).send('Failed to authenticate token');
+                        response.status(500).send({
+                            message: "Failed to authenticate token"
+                        });
                     });
                 }
             });
@@ -98,7 +107,10 @@ module.exports = {
         .then(function(users) {
 
             if (!users.length) {
-                response.status(401).send("Failed to authenticate user");
+                response.status(401).send({
+                    message: "Failed to authenticate user"
+                });
+
                 next('router');
                 return;
             }
@@ -111,7 +123,10 @@ module.exports = {
                 if (role[0].name == "admin") {
                     next();
                 } else {
-                    response.status(401).send("You don't have permission to perform this action");
+                    response.status(401).send({
+                        message: "You don't have permission to perform this action"
+                    });
+
                     next('router');
                 }
 

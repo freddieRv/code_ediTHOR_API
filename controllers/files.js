@@ -11,7 +11,9 @@ class FilesController
         .then(function(res) {
 
             if (res[0].data.type == "d") {
-                response.status(400).send("Requested file is a directory");
+                response.status(400).send({
+                    message: "Requested file is a directory"
+                });
                 return;
             }
 
@@ -129,7 +131,9 @@ class FilesController
         File.find(request.params.id)
         .then(function(files) {
             if (!files.length) {
-                response.status(404).send("File not found");
+                response.status(404).send({
+                    message: "File not found"
+                });
                 return;
             }
 

@@ -82,12 +82,16 @@ class AuthController
 
     static forgot_password_email(request, response)
     {
-        response.send("forgot password");
+        response.send({
+            message: "forgot password"
+        });
     }
 
     static password_reset(request, response)
     {
-        response.send("password reset");
+        response.send({
+            message: "password reset"
+        });
     }
 
 }

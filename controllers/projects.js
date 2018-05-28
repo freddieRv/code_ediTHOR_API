@@ -284,7 +284,10 @@ class ProjectsController
         .then(function(files) {
 
             if (!files.length) {
-                response.status(404).send("Father not found");
+                response.status(404).send({
+                    message: "Father not found"
+                });
+
                 return;
             }
 
@@ -310,7 +313,9 @@ class ProjectsController
 
             file.save()
             .then(function(res) {
-                response.send("File created");
+                response.send({
+                    message: "File created"
+                });
             })
             .catch(function(save_err) {
                 response.status(500).send(save_err);
@@ -329,7 +334,10 @@ class ProjectsController
         .then(function(files) {
 
             if (!files.length) {
-                response.status(404).send("Father not found");
+                response.status(404).send({
+                    message: "Father not found"
+                });
+
                 return;
             }
 
@@ -352,7 +360,9 @@ class ProjectsController
 
             dir.save()
             .then(function(res) {
-                response.send("Directory created");
+                response.send({
+                    message: "Directory created"
+                });
             })
             .catch(function(save_err) {
                 response.status(500).send(save_err);

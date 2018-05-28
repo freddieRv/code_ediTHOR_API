@@ -162,6 +162,7 @@ module.exports = {
                 response.status(401).send({
                     message: "You dont have permission to perform this action"
                 });
+                
                 next('router');
             }
 

@@ -106,7 +106,10 @@ module.exports = {
                 }
 
                 if (!allowed) {
-                    response.status(401).send("You don't have permission to open this file");
+                    response.status(401).send({
+                        message: "You don't have permission to open this file"
+                    });
+                    
                     next("router");
                     return;
                 }
