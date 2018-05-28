@@ -86,7 +86,10 @@ module.exports = {
                 }
 
             } else {
-                response.status(401).send(message);
+                response.status(401).send({
+                    message: message
+                });
+
                 next('router');
             }
 
@@ -127,7 +130,10 @@ module.exports = {
             if (allowed) {
                 next();
             } else {
-                response.status(401).send("You dont have permission to update this project");
+                response.status(401).send({
+                    message: "You dont have permission to update this project"
+                });
+
                 next('router');
             }
 
@@ -153,7 +159,9 @@ module.exports = {
             if (allowed) {
                 next();
             } else {
-                response.status(401).send("You dont have permission to perform this action");
+                response.status(401).send({
+                    message: "You dont have permission to perform this action"
+                });
                 next('router');
             }
 
