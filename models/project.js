@@ -2,6 +2,11 @@ const Model = require('../base/model');
 const File  = require('./file');
 const Query = require('../utils/query');
 
+const FILE_TREE_TYPES = {
+    d: "default",
+    f: "file",
+}
+
 class Project extends Model
 {
     constructor(data)
@@ -93,7 +98,7 @@ class Project extends Model
                             "id": e.id,
                             "text": e.name,
                             "children": [],
-                            "type": "d"
+                            "type": "default"
                         };
 
                         file_tree[0] = current_tree;
@@ -108,7 +113,7 @@ class Project extends Model
                             "text": e.name,
                             "children": [],
                             "father_id": e.father_id,
-                            "type": e.type
+                            "type": FILE_TREE_TYPES[e.type],
                         });
                     }
                 });

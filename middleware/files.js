@@ -15,7 +15,8 @@ module.exports = {
         }
 
         if (!request.body['file']) {
-            errors.push('no file uploaded');
+            // errors.push('no file uploaded');
+            request.body.file = "";
         }
 
         if (errors.length) {
@@ -89,7 +90,6 @@ module.exports = {
 
     can_show(request, response, next)
     {
-
         User.find(request.authenticated_user_id)
         .then(function(users) {
             var user = new User(users[0].data);
@@ -109,7 +109,7 @@ module.exports = {
                     response.status(401).send({
                         message: "You don't have permission to open this file"
                     });
-                    
+
                     next("router");
                     return;
                 }

@@ -120,7 +120,7 @@ module.exports = {
             user.role(Role)
             .then(function(role) {
 
-                if (role[0].name == "admin") {
+                if (role[0].name == "admin" || request.params.id == request.authenticated_user_id) {
                     next();
                 } else {
                     response.status(401).send({

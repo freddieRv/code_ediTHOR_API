@@ -45,22 +45,29 @@ class FilesController
         File.find(request.params.id)
         .then(function(files) {
 
-            if (files[0].data.type == "d") {
-                response.status(400).send({
-                    message: "Requested file is a directory"
-                });
-                return;
-            }
+            // if (files[0].data.type == "d") {
+            //     response.status(400).send({
+            //         message: "Requested file is a directory"
+            //     });
+            //     return;
+            // }
 
             var file     = new File(files[0].data);
             var old_name = 0;
+
+            if (request.body['father_id']) {
+                file.data.father_id = request.body.father_id;
+
+                // TODO: move actual file
+
+            }
 
             if (request.body['name']) {
                 old_name       = files[0].data.name;
                 file.data.name = request.body['name'];
             }
 
-            if (request.body['content']) {
+            if (request.body['content'] && file.data.type == "f") {
                 var buffered_content = Buffer.from(request.body.content, 'base64');
                 var file_path        = env.storage_dir + file.data.location + file.data.name;
 
