@@ -75,18 +75,15 @@ class Model
         return new Promise(function(resolve, reject) {
             model.query().exec()
             .then(function(res) {
-                var parsed_res = [];
+                // var parsed_res = [];
+                //
+                // res.forEach(function(element) {
+                //     parsed_res.push(model.instance(element));
+                // });
 
-                res.forEach(function(element) {
-                    parsed_res.push(model.instance(element));
-                });
-
-                resolve(parsed_res);
+                resolve(res);
             })
             .catch(function(err) {
-
-                // TODO: parse error
-
                 reject(err);
             });
         });

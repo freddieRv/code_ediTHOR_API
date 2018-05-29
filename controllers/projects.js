@@ -28,22 +28,52 @@ class ProjectsController
     {
         User.find(request.authenticated_user_id)
         .then(function(users) {
+
+            if (!users.length) {
+                response.status(404).send({
+                    message: "user not found"
+                });
+
+                return;
+            }
+
             var user = new User(users[0].data);
 
-            user.projects(Project)
-            .then(function(projects) {
+            console.log(user.data.role_id);
+            if (user.data.role_id == 1) {
 
-                var res_projects = projects;
 
-                if (request.query['filter']) {
-                    res_projects = filter_projects(projects, request.query.filter);
-                }
+                Project.all()
+                .then(function(projects) {
+                    var res_projects = projects;
 
-                response.send(res_projects);
-            })
-            .catch(function(err) {
-                response.status(500).send(err);
-            });
+                    if (request.query['filter']) {
+                        res_projects = filter_projects(projects, request.query.filter);
+                    }
+
+                    response.send(res_projects);
+                })
+                .catch(function(projects_err) {
+                    respnse.status(500).send(projects_err);
+                });
+
+            } else {
+                user.projects(Project)
+                .then(function(projects) {
+
+                    var res_projects = projects;
+
+                    if (request.query['filter']) {
+                        res_projects = filter_projects(projects, request.query.filter);
+                    }
+
+                    response.send(res_projects);
+                })
+                .catch(function(err) {
+                    response.status(500).send(err);
+                });
+            }
+
         })
         .catch(function(err) {
             response.status(500).send(err);
