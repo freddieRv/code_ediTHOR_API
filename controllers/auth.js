@@ -52,6 +52,14 @@ class AuthController
                 return;
             }
 
+            if (!res[0].active) {
+                response.status(401).send({
+                    message: 'This user is not active'
+                });
+
+                return;
+            }
+
             var valid_password = bcrypt.compareSync(request.body.password, res[0].password);
 
             if (valid_password) {
@@ -67,7 +75,13 @@ class AuthController
 
                 response.send({
                     message: 'Login succesfull',
-                    token: token
+                    token: token,
+                    user: {
+                        id: res[0].id,
+                        username: res[0].username,
+                        email: res[0].email,
+                        role_id: res[0].role_id,
+                    },
                 });
             } else {
                 response.status(400).send({
