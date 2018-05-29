@@ -88,6 +88,9 @@ class FilesController
                     if (request.body['name']) {
                         old_name       = files[0].data.name;
                         file.data.name = request.body['name'];
+
+                        // TODO: rename actual file
+
                     }
 
                     if (request.body['content'] && file.data.type == "f") {
