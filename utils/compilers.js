@@ -25,8 +25,12 @@ function command(location, name)
 
         case "java":
             var exec_path = file_path.split(".")[0];
+
             commands.push(`javac ${file_path}`);
-            commands.push(`java ${exec_path}`);
+            commands.push(`mv ${exec_path + '.class'} ./`);
+            commands.push(`java ${splited[0]}`);
+            commands.push(`rm ${splited[0] + '.class'}`);
+
             break;
     }
 
