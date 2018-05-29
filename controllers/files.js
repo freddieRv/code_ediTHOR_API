@@ -88,9 +88,10 @@ class FilesController
                     if (request.body['name']) {
                         old_name       = files[0].data.name;
                         file.data.name = request.body['name'];
+                        var old_path   = env.app_dir + env.storage_dir + file.data.location + old_name;
+                        var new_path   = env.app_dir + env.storage_dir + file.data.location + name;
 
-                        // TODO: rename actual file
-
+                        fs.renameSync(old_path, new_path);
                     }
 
                     if (request.body['content'] && file.data.type == "f") {
@@ -131,6 +132,10 @@ class FilesController
                 if (request.body['name']) {
                     old_name       = files[0].data.name;
                     file.data.name = request.body['name'];
+                    var old_path   = env.app_dir + env.storage_dir + file.data.location + old_name;
+                    var new_path   = env.app_dir + env.storage_dir + file.data.location + request.body['name'];
+
+                    fs.renameSync(old_path, new_path);
                 }
 
                 if (request.body['content'] && file.data.type == "f") {
