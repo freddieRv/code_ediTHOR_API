@@ -60,8 +60,8 @@ module.exports = {
             var message = "You dont have permission to update this project";
 
             users.forEach(function(user) {
-                if (user.id == request.authenticated_user_id || request.is_admin) {
-                    if (user.role == 'project_admin') {
+                if (user.id == request.authenticated_user_id) {
+                    if (user.role == 'project_admin' || request.is_admin) {
                         allowed = true;
                     } else {
                         message = "You dont have permission to delete this project";
