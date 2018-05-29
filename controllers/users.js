@@ -20,7 +20,10 @@ class UsersController
         .then(function(users) {
 
             if (!users.length) {
-                response.send({});
+                response.status(404).send({
+                    message: "User not found"
+                });
+                
                 return;
             }
 

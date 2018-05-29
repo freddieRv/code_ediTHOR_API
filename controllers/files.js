@@ -45,43 +45,107 @@ class FilesController
         File.find(request.params.id)
         .then(function(files) {
 
-            // if (files[0].data.type == "d") {
-            //     response.status(400).send({
-            //         message: "Requested file is a directory"
-            //     });
-            //     return;
-            // }
-
             var file     = new File(files[0].data);
             var old_name = 0;
 
             if (request.body['father_id']) {
-                file.data.father_id = request.body.father_id;
 
-                // TODO: move actual file
+                File.find(request.body.father_id)
+                .then(function(father) {
 
-            }
+                    if (!father.length) {
+                        response.status(404).send({
+                            message: "Father dir not found"
+                        });
 
-            if (request.body['name']) {
-                old_name       = files[0].data.name;
-                file.data.name = request.body['name'];
-            }
-
-            if (request.body['content'] && file.data.type == "f") {
-                var buffered_content = Buffer.from(request.body.content, 'base64');
-                var file_path        = env.storage_dir + file.data.location + file.data.name;
-
-                try {
-
-                    fs.writeFileSync(file_path, buffered_content);
-
-                    if (old_name && old_name != file.data.name) {
-                        fs.unlinkSync(env.storage_dir + file.data.location + old_name);
+                        return;
                     }
 
-                } catch (e) {
-                    response.status(500).send(e);
-                    return;
+                    if (father[0].data.type == "f") {
+                        response.status(400).send({
+                            message: "Father dir is a file"
+                        });
+
+                        return;
+                    }
+
+                    var old_path = env.app_dir
+                                 + env.storage_dir
+                                 + file.data.location + file.data.name;
+
+                    var new_path = env.app_dir
+                                 + env.storage_dir
+                                 + father[0].data.location
+                                 + "/"
+                                 + file.data.name;
+
+                    fs.renameSync(old_path, new_path);
+
+                    file.data.father_id = request.body['father_id'];
+                    file.data.location  = father[0].data.location
+                                        + "/";
+
+                    if (request.body['name']) {
+                        old_name       = files[0].data.name;
+                        file.data.name = request.body['name'];
+                    }
+
+                    if (request.body['content'] && file.data.type == "f") {
+                        var buffered_content = Buffer.from(request.body.content, 'base64');
+                        var file_path        = env.storage_dir + file.data.location + file.data.name;
+
+                        try {
+
+                            fs.writeFileSync(file_path, buffered_content);
+
+                            if (old_name && old_name != file.data.name) {
+                                fs.unlinkSync(env.storage_dir + file.data.location + old_name);
+                            }
+
+                        } catch (e) {
+                            response.status(500).send(e);
+                            return;
+                        }
+                    }
+
+                    file.save()
+                    .then(function(save_res) {
+                        response.send({
+                            message: "File updated",
+                        });
+                    })
+                    .catch(function(save_err) {
+                        response.status(500).send(save_err);
+                    });
+
+                })
+                .catch(function(father_err) {
+                    response.status(500).send(father_err);
+                });
+
+            } else {
+
+                if (request.body['name']) {
+                    old_name       = files[0].data.name;
+                    file.data.name = request.body['name'];
+                }
+
+                if (request.body['content'] && file.data.type == "f") {
+                    var buffered_content = Buffer.from(request.body.content, 'base64');
+                    var file_path        = env.storage_dir + file.data.location + file.data.name;
+
+                    try {
+
+                        fs.writeFileSync(file_path, buffered_content);
+
+                        if (old_name && old_name != file.data.name) {
+                            fs.unlinkSync(env.storage_dir + file.data.location + old_name);
+                        }
+
+                    } catch (e) {
+                        response.status(500).send(e);
+                        return;
+                    }
                 }
 
                 file.save()
@@ -93,7 +157,6 @@ class FilesController
                 .catch(function(save_err) {
                     response.status(500).send(save_err);
                 });
-
             }
 
         })
