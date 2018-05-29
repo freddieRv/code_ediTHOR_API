@@ -1,6 +1,7 @@
 const File      = require('../models/file');
 const compilers = require('../utils/compilers');
 const fs        = require('fs');
+const fse       = require('fs-extra');
 const env       = require('../env');
 
 class FilesController
@@ -17,7 +18,10 @@ class FilesController
                 return;
             }
 
-            var file_path = env.storage_dir + res[0].data.location + res[0].data.name;
+            var file_path = env.app_dir
+                          + env.storage_dir
+                          + res[0].data.location
+                          + res[0].data.name;
 
             fs.readFile(file_path, function read(err, content) {
                 if (err) {
@@ -69,21 +73,43 @@ class FilesController
                         return;
                     }
 
-                    var old_path = env.app_dir
-                                 + env.storage_dir
-                                 + file.data.location + file.data.name;
+                    var old_path = "";
+                    var new_path = "";
 
-                    var new_path = env.app_dir
+                    if (file.data.type == "f") {
+                        old_path = env.app_dir
+                                 + env.storage_dir
+                                 + file.data.location
+                                 + file.data.name;
+
+                        new_path = env.app_dir
                                  + env.storage_dir
                                  + father[0].data.location
                                  + "/"
                                  + file.data.name;
 
-                    fs.renameSync(old_path, new_path);
+                        fs.renameSync(old_path, new_path);
+                        file.data.location = father[0].data.location + "/";
+                    } else {
+                        old_path = env.app_dir
+                                 + env.storage_dir
+                                 + file.data.location;
+
+                        new_path = env.app_dir
+                                 + env.storage_dir
+                                 + father[0].data.location
+                                 + "/"
+                                 + file.data.name;
+
+                        fse.moveSync(old_path, new_path);
+
+                        // file.update_children(father[0].data.location + file.data.name);
+                        // TODO: Update all children's location
+
+                        file.data.location = father[0].data.location + file.data.name;
+                    }
 
                     file.data.father_id = request.body['father_id'];
-                    file.data.location  = father[0].data.location
-                                        + "/";
 
                     if (request.body['name']) {
                         old_name       = files[0].data.name;
@@ -178,16 +204,36 @@ class FilesController
         File.find(request.params.id)
         .then(function(files) {
 
-            var path_to_delete = env.storage_dir + files[0].data.location + files[0].data.name;
+            if (!files.length) {
+                response.status(404).send({
+                    message: "File not found"
+                });
+
+                return;
+            }
+
+            var path_to_delete = env.app_dir
+                               + env.storage_dir
+                               + files[0].data.location;
+
+            if (files[0].data.type === "f") {
+                path_to_delete += files[0].data.name;
+            }
 
             File.query()
             .where('id', '=', request.params.id)
             .destroy()
             .then(function(res) {
 
-                try {
-                    fs.unlinkSync(path_to_delete);
-                } catch (e) {}
+                if (files[0].data.type === "f") {
+                    try {
+                        fs.unlinkSync(path_to_delete);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                } else {
+                    fse.removeSync(path_to_delete);
+                }
 
                 response.send({
                     message: 'File deleted',
