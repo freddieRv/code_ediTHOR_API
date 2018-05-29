@@ -1,6 +1,26 @@
 const Project = require('../models/project');
 const File    = require('../models/file');
 const User    = require('../models/user');
+const fs      = require('fs');
+const path    = require('path');
+const env     = require('../env');
+const zipper  = require("zip-local");
+
+function filter_projects(projects, filter)
+{
+    var filtered_projects = [];
+    var match = 0;
+
+    for (var i = 0; i < projects.length; i++) {
+        match = projects[i].name.search(filter);
+
+        if (match != -1) {
+            filtered_projects.push(projects[i]);
+        }
+    }
+
+    return filtered_projects
+}
 
 class ProjectsController
 {
@@ -12,7 +32,14 @@ class ProjectsController
 
             user.projects(Project)
             .then(function(projects) {
-                response.send(projects);
+
+                var res_projects = projects;
+
+                if (request.query['filter']) {
+                    res_projects = filter_projects(projects, request.query.filter);
+                }
+
+                response.send(res_projects);
             })
             .catch(function(err) {
                 response.status(500).send(err);
@@ -29,6 +56,15 @@ class ProjectsController
 
         Project.find(request.params.id)
         .then(function(project_res) {
+
+            if (!project_res.length) {
+                response.status(404).send({
+                    message: "Project not found"
+                });
+
+                return;
+            }
+
             project = new Project(project_res[0].data);
 
             project.file_tree()
@@ -62,11 +98,19 @@ class ProjectsController
 
         project.save()
         .then(function(project_res) {
+
+            var location = project.data.name
+                         + "_"
+                         + Math.random().toString(36).substring(2, 15);
+
+            fs.mkdirSync(env.storage_dir + location);
+
             var root_dir = new File({
-               name: '/',
+               name: location,
                type: 'd',
                project_id: project_res.insertId,
                created_by: request.authenticated_user_id,
+               location: location,
             });
 
             project.data.id = project_res.insertId;
@@ -156,21 +200,92 @@ class ProjectsController
         Project.find(request.params.id)
         .then(function(res) {
             var project = new Project(res[0].data);
-            var user    = new User({id: request.body.user_id});
 
-            project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: 5})
-            .then(function(res) {
-                response.send({
-                    message: "User added to project",
+            User.query()
+            .where('username', '=', request.body.user)
+            .orWhere('email', '=', request.body.user)
+            .exec()
+            .then(function(users) {
+
+                if (!users.length) {
+                    response.status(404).send({
+                        message: "User not found"
+                    });
+
+                    return;
+                }
+
+                var user = new User(users[0]);
+
+                project.users()
+                .then(function(users_res) {
+
+                    var belongs_to_project = false;
+
+                    for (var i = 0; i < users_res.length; i++) {
+                        if (users_res[i].id == user.data.id) {
+                            belongs_to_project = true;
+                        }
+                    }
+
+                    if (belongs_to_project) {
+                        response.status(400).send({
+                            message: "User already belongs to project"
+                        });
+                        return;
+                    }
+
+                    project.save_related(user, 'project_id', 'user_id', 'project_user', {role_id: request.body.role})
+                    .then(function(res) {
+                        response.send({
+                            message: "User added to project",
+                        });
+                    })
+                    .catch(function(err) {
+                        response.send(err);
+                    });
+
+                })
+                .catch(function(users_err) {
+                    response.status(500).send(users_err);
                 });
+
             })
-            .catch(function(err) {
-                response.send(err);
+            .catch(function(user_err) {
+                response.status(500).send(user_err);
             });
 
         })
         .catch(function(err) {
             response.send(err);
+        });
+    }
+
+    static remove_user(request, response)
+    {
+        Project.find(request.params.id)
+        .then(function(projects) {
+            if (!projects.length) {
+                response.status(404).send({
+                    message: "Project not found"
+                });
+            }
+
+            var project = new Project(projects[0].data);
+
+            project.remove_user(request.body.user_id)
+            .then(function(res) {
+                response.send({
+                    message: "User removed from project"
+                });
+            })
+            .catch(function(remove_err) {
+                response.status(500).send(remove_err);
+            });
+
+        })
+        .catch(function(projects_err) {
+            response.status(500).send(project_err);
         });
     }
 
@@ -196,23 +311,131 @@ class ProjectsController
 
     static add_file(request, response)
     {
-        var file = new File({
-            name:       request.body.name,
-            type:       request.body.type,
-            project_id: request.params.id,
-            created_by: request.authenticated_user_id,
-            father_id:  request.body.father_id,
+        File.find(request.body.father_id)
+        .then(function(files) {
+
+            if (!files.length) {
+                response.status(404).send({
+                    message: "Father not found"
+                });
+
+                return;
+            }
+
+            var father   = new File(files[0].data);
+            var content  = Buffer.from(request.body.file, 'base64');
+            var location = father.data.location + '/';
+
+            try {
+                fs.writeFileSync(env.storage_dir + location + request.body.name, content);
+            } catch (e) {
+                response.status(500).send(e);
+                return;
+            }
+
+            var file = new File({
+                name:       request.body.name,
+                type:       'f',
+                project_id: request.params.id,
+                created_by: request.authenticated_user_id,
+                father_id:  request.body.father_id,
+                location:   location,
+            });
+
+            file.save()
+            .then(function(res) {
+                response.send({
+                    message: "File created"
+                });
+            })
+            .catch(function(save_err) {
+                response.status(500).send(save_err);
+            });
+
+        })
+        .catch(function(file_err) {
+            response.status(500).send(file_err);
         });
 
-        file.save()
-        .then(function(res) {
-            response.send({
-                message: 'File created',
-                file: file
+    }
+
+    static add_dir(request, response)
+    {
+        File.find(request.body.father_id)
+        .then(function(files) {
+
+            if (!files.length) {
+                response.status(404).send({
+                    message: "Father not found"
+                });
+
+                return;
+            }
+
+            var father = new File(files[0].data);
+
+            var location = father.data.location
+                         + '/'
+                         + request.body.name;
+
+            fs.mkdirSync(env.storage_dir + location);
+
+            var dir = new File({
+                name:       request.body.name,
+                type:       'd',
+                project_id: request.params.id,
+                created_by: request.authenticated_user_id,
+                father_id:  request.body.father_id,
+                location:   location,
             });
+
+            dir.save()
+            .then(function(res) {
+                response.send({
+                    message: "Directory created"
+                });
+            })
+            .catch(function(save_err) {
+                response.status(500).send(save_err);
+            });
+
         })
-        .catch(function(err) {
-            response.status(500).send(err);
+        .catch(function(file_err) {
+            response.status(500).send(file_err);
+        });
+
+    }
+
+    static download(request, response)
+    {
+        Project.find(request.params.id)
+        .then(function(projects) {
+
+            if (!projects.length) {
+                response.status(404).send({
+                    message: "Project not found"
+                });
+
+                return;
+            }
+
+            var project = new Project(projects[0].data);
+
+            project.file_tree()
+            .then(function(file_tree) {
+                var root_dir = env.storage_dir + file_tree[0].text;
+                var zipped   = env.storage_dir + project.data.name + ".zip"
+                zipper.sync.zip(root_dir).compress().save(zipped);
+
+                response.download(zipped);
+            })
+            .catch(function(file_tree_err) {
+                response.status(500).send(file_tree_err);
+            });
+
+        })
+        .catch(function(project_err) {
+            response.status(500).send(project_err);
         });
     }
 }

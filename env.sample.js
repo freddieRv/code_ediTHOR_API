@@ -7,4 +7,6 @@ module.exports = {
         password: 'secret',
         name:     'some_name',
     },
+    storage_dir: 'storage/',
+    app_dir:     '/home/freddierv/Documents/code_EdiTHOR_API/',
 };

@@ -35,6 +35,7 @@ class File extends Model
     {
         return this.belongsToMany(Project, this.table(), 'project_id');
     }
+
 }
 
 module.exports = File;

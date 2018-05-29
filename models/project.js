@@ -2,6 +2,11 @@ const Model = require('../base/model');
 const File  = require('./file');
 const Query = require('../utils/query');
 
+const FILE_TREE_TYPES = {
+    d: "default",
+    f: "file",
+}
+
 class Project extends Model
 {
     constructor(data)
@@ -92,7 +97,8 @@ class Project extends Model
                         current_tree = {
                             "id": e.id,
                             "text": e.name,
-                            "children": []
+                            "children": [],
+                            "type": "default"
                         };
 
                         file_tree[0] = current_tree;
@@ -106,7 +112,8 @@ class Project extends Model
                             "id": e.id,
                             "text": e.name,
                             "children": [],
-                            "father_id": e.father_id
+                            "father_id": e.father_id,
+                            "type": FILE_TREE_TYPES[e.type],
                         });
                     }
                 });
@@ -117,6 +124,23 @@ class Project extends Model
                 reject(err)
             });
         });
+    }
+
+    raw_files()
+    {
+        return this.hasOneOrMany(File, 'project_id');
+    }
+
+    remove_user(user_id)
+    {
+        var query = new Query();
+        var query_string = `
+            DELETE FROM project_user
+            WHERE project_id = ${this.data[this.constructor.primary_key()]}
+            AND user_id = ${user_id}
+        `;
+
+        return query.exec(query_string);
     }
 }
 

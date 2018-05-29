@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS projects (
 
 CREATE TABLE IF NOT EXISTS files (
     id         INT(10)        NOT NULL AUTO_INCREMENT,
-    name       VARCHAR(30)    NOT NULL,
+    name       VARCHAR(100)   NOT NULL,
     type       ENUM('f', 'd') NOT NULL,
     project_id INT(20)        NOT NULL,
     created_at TIMESTAMP      NOT NULL,
