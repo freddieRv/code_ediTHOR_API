@@ -86,6 +86,7 @@ module.exports = {
                                 });
                             } else {
                                 request.authenticated_user_id = decoded.id;
+                                request.is_admin = users[0].data.role_id == 1;
                                 next();
                             }
                         }

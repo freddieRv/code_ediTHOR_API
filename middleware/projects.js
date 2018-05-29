@@ -205,7 +205,7 @@ module.exports = {
         get_project_users(request.params.id, function(users) {
             var allowed = false;
 
-            if (request.authenticated_user_id == request.body.user_id) {
+            if (request.authenticated_user_id == request.body.user_id || request.is_admin) {
                 allowed = true;
             } else {
                 users.forEach(function(user) {
