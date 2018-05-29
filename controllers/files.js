@@ -31,7 +31,7 @@ class FilesController
 
                 var encoded = Buffer.from(content).toString('base64');
 
-                response.send({
+                response.status(200).send({
                     id:      res[0].data.id,
                     name:    res[0].data.name,
                     content: encoded,
