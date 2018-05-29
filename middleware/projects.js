@@ -122,23 +122,48 @@ module.exports = {
     can_update(request, response, next)
     {
         get_project_users(request.params.id, function(users) {
-            var allowed = false;
+            var users = users;
 
-            users.forEach(function(user) {
-                if (user.id == request.authenticated_user_id) {
-                    allowed = true;
+            User.find(request.authenticated_user_id)
+            .then(function(user_res) {
+
+                if (!user_res.length) {
+                    response.status(404).send({
+                        message: "User not found"
+                    });
+
+                    next('router');
+                    return;
                 }
-            });
 
-            if (allowed) {
-                next();
-            } else {
-                response.status(401).send({
-                    message: "You dont have permission to perform this action"
-                });
+                var allowed = false;
 
+                if (user_res[0].data.role_id == 1) {
+                    allowed = true;
+                } else {
+                    users.forEach(function(user) {
+                        if (user.id == request.authenticated_user_id) {
+                            allowed = true;
+                        }
+                    });
+                }
+
+                if (allowed) {
+                    next();
+                } else {
+                    response.status(401).send({
+                        message: "You dont have permission to perform this action"
+                    });
+
+                    next('router');
+                }
+
+            })
+            .catch(function(user_err) {
+                response.status(500).send(user_err);
                 next('router');
-            }
+                return;
+            });
 
         }, function(err) {
             response.status(500).send(err);

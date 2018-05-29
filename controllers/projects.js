@@ -39,9 +39,7 @@ class ProjectsController
 
             var user = new User(users[0].data);
 
-            console.log(user.data.role_id);
             if (user.data.role_id == 1) {
-
 
                 Project.all()
                 .then(function(projects) {
@@ -183,6 +181,9 @@ class ProjectsController
 
     static update(request, response)
     {
+
+        console.log("DEBUG, BITCH!");
+
         Project.find(request.params.id)
         .then(function(res) {
             var project = new Project(res[0].data);
