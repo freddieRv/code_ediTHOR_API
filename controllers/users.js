@@ -23,7 +23,7 @@ class UsersController
                 response.status(404).send({
                     message: "User not found"
                 });
-                
+
                 return;
             }
 
@@ -56,9 +56,19 @@ class UsersController
 
             var user = new User(users[0].data);
 
-            Object.keys(request.body).forEach(function(key) {
-                user.data[key] = request.body[key];
-            });
+            if (request.body['username']) {
+                user.data.username = request.body.username;
+            }
+
+            if (request.body['email']) {
+                user.data.email = request.body.email;
+            }
+
+            if (request.body['password'] && request.body['password_confirmation']) {
+                if (request.body.password == request.body.password_confirmation) {
+                    user.data.password = bcrypt.hashSync(request.body.password, 8);
+                }
+            }
 
             user.save()
             .then(function(save_res) {
