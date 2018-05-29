@@ -59,15 +59,19 @@ module.exports = {
             var allowed = false;
             var message = "You dont have permission to update this project";
 
-            users.forEach(function(user) {
-                if (user.id == request.authenticated_user_id) {
-                    if (user.role == 'project_admin' || request.is_admin) {
-                        allowed = true;
-                    } else {
-                        message = "You dont have permission to delete this project";
+            if (request.is_admin) {
+                allowed = true;
+            } else {
+                users.forEach(function(user) {
+                    if (user.id == request.authenticated_user_id) {
+                        if (user.role == 'project_admin') {
+                            allowed = true;
+                        } else {
+                            message = "You dont have permission to delete this project";
+                        }
                     }
-                }
-            });
+                });
+            }
 
             if (allowed) {
                 var errors = [];
